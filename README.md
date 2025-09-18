@@ -6,11 +6,12 @@ An app expanding on [this](https://alexelentukh.webflow.io/) website that will c
 ## Frameworks
 * ReactJS
 * Python Flask
+* MongoDB
 
 ## Access the project code 
 [Click here to see the project repository](https://github.com/ramired2/CS633-team1)
 
-## Access the deployed version
+## Access the deployed version on Render
 [Currently links to project repository](https://github.com/ramired2/CS633-team1)
 
 ## How to Run the project...
