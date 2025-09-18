@@ -7,12 +7,13 @@ DROP TABLE IF EXISTS Modules;
 DROP TABLE IF EXISTS Questions;
 DROP TABLE IF EXISTS Principles;
 DROP TABLE IF EXISTS Donts;
+DROP TABLE IF EXISTS Donts;
 
 -- TABLE CREATIONS -- 
 CREATE TABLE Admins (
 	adminID INT UNIQUE AUTO_INCREMENT NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    email VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL DEFAULT "plsChangeUrPassword",
     PRIMARY KEY (adminID)
 );
@@ -64,6 +65,16 @@ CREATE TABLE Donts (
     FOREIGN KEY (modID) REFERENCES Modules(modID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE Quizzes (
+	quizID INT UNIQUE AUTO_INCREMENT NOT NULL,
+    question VARCHAR(300) NOT NULL,
+    answer VARCHAR(300) NOT NULL,
+    modID INT NOT NULL,
+    supplemental BLOB,
+    PRIMARY KEY (quizID),
+    FOREIGN KEY (modID) REFERENCES Modules(modID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- DATA INSERTION -- 
 INSERT INTO Admins (name, email, password)
 VALUES	("daisy", "ramired@bu.edu", "totallySecure!");
@@ -98,6 +109,9 @@ VALUES	("blah blah dont 1", "bc i said so", 1),
 		("how do i? 2 dont", "bc i said so", 1),
 		("how do i? 3 dont", "bc i said so", 2),
         ("how do i? 1 dont", "bc i said so", 7);
+        
+INSERT INTO Quizzes (question, answer, modID)
+VALUES	("what is the team name?", "team 1", 1);
 
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
