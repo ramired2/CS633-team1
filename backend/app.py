@@ -52,18 +52,38 @@ def getAllAdmins():
 
     return json.dumps(data)
 
-# inserting a new admin 
-@app.route("/addNewAdmin/<name>/<email>", methods=['POST', 'GET'])
-def addAdmin(name, email):
+# get admin by id
+@app.route("/getAdmin/<id>", methods=['GET'])
+def getAdmin(id):
     # opens DB connection
     dbInfo = connect()
     cursor = dbInfo[1]
     cnx = dbInfo[0]
 
-    print("adding: " + name + ", " + email)
+    query = "SELECT * FROM Admins WHERE adminID = %s;"
+    cursor.execute(query, (id,))
+    data = cursor.fetchall()
 
-    query = "INSERT INTO Admins (name, email) VALUES (%s, %s);"
-    cursor.execute(query, (name, email))
+    # close db
+    cursor.close()
+    cnx.close()
+
+    print(data)
+
+    return json.dumps(data[0])
+
+# inserting a new admin 
+@app.route("/addNewAdmin/<fn>/<ln>/<email>", methods=['POST', 'GET'])
+def addAdmin(fn, ln, email):
+    # opens DB connection
+    dbInfo = connect()
+    cursor = dbInfo[1]
+    cnx = dbInfo[0]
+
+    print("adding: " + fn + " " + ln + ", " + email)
+
+    query = "INSERT INTO Admins (fn, ln, email) VALUES (%s, %s, %s);"
+    cursor.execute(query, (fn, ln, email))
     cnx.commit()
     msg = "Successfully added a person!"
 
@@ -73,9 +93,9 @@ def addAdmin(name, email):
 
     return msg
 
-# getting all of the admins
-@app.route("/editAdmin/<adminID>/<name>/<email>/<password>", methods=['GET', 'POST', 'PUT'])
-def editAdmin(adminID, name, email, password):
+# edit admin info
+@app.route("/editAdmin/<adminID>/<fn>/<ln>/<email>/<password>", methods=['GET', 'POST', 'PUT'])
+def editAdmin(adminID, fn, ln, email, password):
     # opens DB connection
     dbInfo = connect()
     cursor = dbInfo[1]
@@ -87,8 +107,9 @@ def editAdmin(adminID, name, email, password):
     # email = info['email']
     # password = info['password']
 
-    query = "UPDATE Admins SET name = %s, email = %s, password =%s WHERE adminID = %s;"
-    cursor.execute(query, (name, email, password, adminID))
+    query = "UPDATE Admins SET fn = %s, ln = %s, email = %s, password =%s \
+                WHERE adminID = %s;"
+    cursor.execute(query, (fn, ln, email, password, adminID))
     cnx.commit()
 
     # close db
@@ -97,7 +118,7 @@ def editAdmin(adminID, name, email, password):
 
     msg = "updated"
 
-    return msg
+    return getAdmin(adminID)
 
 # delete admin
 @app.route("/deleteAdmin/<id>", methods=['DELETE', 'GET'])
@@ -116,6 +137,77 @@ def deleteAdmin(id):
     cnx.close()
 
     return msg
+
+################################################################################
+#
+#                           Details Manipulations
+#
+################################################################################
+
+# 
+@app.route("/getDetails", methods=['GET'])
+def getDetails():
+    # opens DB connection
+    dbInfo = connect()
+    cursor = dbInfo[1]
+    cnx = dbInfo[0]
+
+    query = "SELECT Details.detailID, Details.content, CONCAT(Admins.fn, ' ', Admins.ln) AS name, Admins.email FROM Details INNER JOIN Admins ON Details.adminID = Admins.adminID;"
+    cursor.execute(query)
+    data = cursor.fetchall()
+
+    # close db
+    cursor.close()
+    cnx.close()
+
+    print(data)
+
+    return json.dumps(data)
+
+# insert new description
+@app.route("/addNewDescription/<content>/<adminID>", methods=['POST', 'GET'])
+def addDescription(content, adminID):
+    # opens DB connection
+    dbInfo = connect()
+    cursor = dbInfo[1]
+    cnx = dbInfo[0]
+
+    query = "INSERT INTO Details (content, adminID) VALUES (%s, %s);"
+    cursor.execute(query, (content, adminID))
+    cnx.commit()
+    msg = "Successfully added description"
+
+    # get last item added
+    query = "SELECT Details.detailID, Details.content, CONCAT(Admins.fn, ' ', Admins.ln) AS name, Admins.email FROM Details INNER JOIN Admins ON Details.adminID = Admins.adminID;"
+    cursor.execute(query)
+    data = cursor.fetchall()
+
+    # close db
+    cursor.close()
+    cnx.close()
+
+    print(type(data))
+
+    temp = []
+    temp.append(data[-1][-4])
+    temp.append(data[-1][-3])
+    temp.append(data[-1][-2])
+    temp.append(data[-1][-1])
+
+    return temp
+
+################################################################################
+#
+#                           Courses Manipulations
+#
+################################################################################
+
+
+################################################################################
+#
+#                           Modules Manipulations
+#
+################################################################################
 
 if __name__ == "__main__":
     app.config['TEMPLATES_AUTO_RELOAD'] = True
