@@ -396,10 +396,5 @@ def intToObjID(id):
 
 if __name__ == "__main__":
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    # app.config['MONGO_URI'] = "mongodb+srv://ramired:PTywLYesg1pnBsNV@cs633.7jhuji3.mongodb.net/?retryWrites=true&w=majority&appName=cs633"
-
-    # setup db
-    # client = pymongo(app)
-    # db = client[cs633]
 
     app.run(debug=True, port=5000)
