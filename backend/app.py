@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 # import mysql.connector
 import pymongo
 from bson.objectid import ObjectId
@@ -6,6 +6,14 @@ import os
 import bson
 from dotenv import load_dotenv
 import json
+
+# for slides
+from spire.presentation.common import *
+from spire.presentation import *
+
+# for slides HAVE TO PAY
+import aspose.slides as slides
+import aspose.pydrawing as drawing
 
 app = Flask(__name__)
 
@@ -357,8 +365,8 @@ def getMods():
     return json.dumps(data, default=str)
 
 # inserting a new module 
-@app.route("/addCourse/<name>/<code>/<numModules>", methods=['POST', 'GET'])
-def addCourse(name, code, numModules):
+@app.route("/addMod/<name>/<code>/<numModules>", methods=['POST', 'GET'])
+def addMod(name, code, numModules):
     # open db connection
     db = connect()
 
@@ -392,6 +400,85 @@ def intToObjID(id):
     return bson.ObjectId(id)
 
 # turn ppt into png --> png to bson --> bson saved to db
+# uploading file
+@app.route("/upload/<mod>")
+def upload(mod):
+    # FOR LATER
+        # read ppt from FormData from frontned 
+
+    # the module where you want to save it
+    print(mod)
+
+    img = []
+    presentation = Presentation()
+    presentation.LoadFromFile("./static/module1_test.pptx")
+
+    for i, slide in enumerate(presentation.Slides):
+        print(i)
+        # fow now will save the images to this folder
+        fileName =f"./static/{mod}/{mod}_test{str(i)}.png"
+
+        # save as png
+        image = slide.SaveAsImage()
+        #append to list of images
+        img.append(image)
+
+        # save to file and get rid of instance
+        image.Save(fileName)
+        image.Dispose()
+
+    presentation.Dispose()
+
+    print(img)
+    
+    
+    # HAVE TO PAY
+    # loading presentation
+    # ppt = slides.Presentation("./public/test.pptx")
+    # ppt --> pdf
+    # ppt.save("PPT-to-PDF.pdf", slides.export.SaveFormat.PDF)
+
+    
+    # for slide in ppt.slides:
+    #     pic = slide.get_thumbnail(1, 1)
+    #     pic.save("Slide_{num}.jpg".format(num=str(slide.slide_number)), drawing.imaging.ImageFormat.jpeg)
+    #     img.append(pic)
+
+    return seeImg(mod)
+
+# will always have six modules
+# will always have seven pics
+@app.route("/seeImg/<mod>")
+def seeImg(mod):
+    link = f"/static/{mod}/{mod}_test"
+
+    pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
+            <img src='/static/{mod}/{mod}_test1.png'> \
+            <img src='/static/{mod}/{mod}_test2.png'> \
+            <img src='/static/{mod}/{mod}_test3.png'> \
+            <img src='/static/{mod}/{mod}_test4.png'> \
+            <img src='/static/{mod}/{mod}_test5.png'> \
+            <img src='/static/{mod}/{mod}_test6.png'>"
+    print(pics)
+
+    # have save images to bytes for bson
+    # open db connection
+    # db = connect()
+
+    # # will create table modules
+    # modules = db["modules"]
+
+    # query = { }
+
+    # x = modules.insert_one(query)
+
+    # data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})
+    # print(data)
+
+    # return json.dumps(data, default=str)
+
+    return f"<div>{pics}</div>" 
+
 
 
 if __name__ == "__main__":
