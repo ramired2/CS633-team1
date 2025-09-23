@@ -4,6 +4,7 @@ import pymongo
 from bson.objectid import ObjectId
 import os
 import bson
+import gridfs
 from dotenv import load_dotenv
 import json
 
@@ -463,21 +464,35 @@ def seeImg(mod):
 
     # have save images to bytes for bson
     # open db connection
-    # db = connect()
+    db = connect()
 
-    # # will create table modules
-    # modules = db["modules"]
+    # will create table modules
+    modules = db["modules"]
 
-    # query = { }
+    # for loop to go thru the diff pngs to bytes and append to arry
+    arry = []
+    for i in range(7):
+        blob = gridfs.GridFS(db)
+        file = f"./static/{mod}/{mod}_test{i}.png"
+        # print(file)
 
-    # x = modules.insert_one(query)
+        with open(file, 'rb') as f:
+            contents = f.read()
 
-    # data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})
-    # print(data)
+        arry.append({"filename": file, "pics": contents})
 
-    # return json.dumps(data, default=str)
+    query = {"modName": mod, "pics": arry }
 
-    return f"<div>{pics}</div>" 
+    x = modules.insert_one(query)
+
+    data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})
+    print(data)
+    # data=""
+    
+    # return f"<div>{pics}</div>" 
+    return json.dumps(data, default=str)
+
+    
 
 
 
