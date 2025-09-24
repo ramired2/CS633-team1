@@ -374,11 +374,12 @@ def getMods():
     return retreiveBytesToPng(modules,data)
 
 # will get the byte imgs and make them into pngs to then send to frontend
-def retreiveBytesToPng(modules, data, mod="module3"):
+def retreiveBytesToPng(modules, data):
     listBytes = []
     # will loop through 
     print(modules.count())
     for j in range(modules.count()):
+        mod = f"module{j}"
         for i in range(7):
             
             print(data[j]["pics"][i])
