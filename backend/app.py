@@ -3,6 +3,8 @@ from flask import Flask, render_template
 import pymongo
 from bson.objectid import ObjectId
 import os
+import io
+from PIL import Image
 import bson
 import gridfs
 from dotenv import load_dotenv
@@ -363,55 +365,45 @@ def getMods():
     for x in modules.find(): #parse thru info and add ea entry to data
         data.append(x)
 
-    return json.dumps(data, default=str)
+    # query when getting a specific module
+    # query = { "modName": mod}
+    # data = db.admins.find_one(query)    # search for admin with specific
+                                                    # email
 
-# inserting a new module 
-@app.route("/addMod/<name>/<code>/<numModules>", methods=['POST', 'GET'])
-def addMod(name, code, numModules):
-    # open db connection
-    db = connect()
+    # return json.dumps(data, default=str)
+    return retreiveBytesToPng(modules,data)
 
-    # will create/get table courses
-    courses = db["courses"]
+# will get the byte imgs and make them into pngs to then send to frontend
+def retreiveBytesToPng(modules, data, mod="module3"):
+    listBytes = []
+    # will loop through 
+    print(modules.count())
+    for j in range(modules.count()):
+        for i in range(7):
+            
+            print(data[j]["pics"][i])
+            listBytes.append(data[j]["pics"][i])
+            # binary --> pillow
+            imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])
+            imgPillow = Image.open(imgBytes)
 
-    query = { "courseName": name, "courseCode": code, "numModules": numModules}
+            # # Save the image as a PNG file
+            fileName = f"./static/{mod}/{mod}_test{str(i)}.png"
+            imgPillow.save(fileName, format='PNG')
+            print(f"Image successfully saved as {fileName}")
+    return f"saved imgs to {mod}"
 
-    x = courses.insert_one(query)
-
-    # print(x.inserted_id)
-    data = db.courses.find_one({ "_id": ObjectId(x.inserted_id)})
-    print(data)
-
-    return json.dumps(data, default=str)
-
-################################################################################
-#
-#                                  Other
-#
-################################################################################
-#turn an int to ObjectId for query searches w specific ID
-def intToObjID(id):
-    id = str(id)    # cast to int
-    s = '0' * (24 - len(id)) + id   # creates a string that 24 length
-                                    # ('0000000000000000xxxxxxxx')
-                                    # if id = xxxxxxxx, then fill lower w 0s
-
-    print(s)
-
-    return bson.ObjectId(id)
-
-# turn ppt into png --> png to bson --> bson saved to db
-# uploading file
+# uploading file and saving to static in specified module file
+#  return a definition that will add the pngs to the db "modules"
 @app.route("/upload/<mod>")
 def upload(mod):
-    # FOR LATER
-        # read ppt from FormData from frontned 
-
     # the module where you want to save it
     print(mod)
 
     img = []
     presentation = Presentation()
+    # FOR LATER
+        # read ppt from FormData from frontned. for now reading from file
     presentation.LoadFromFile("./static/module1_test.pptx")
 
     for i, slide in enumerate(presentation.Slides):
@@ -431,38 +423,15 @@ def upload(mod):
     presentation.Dispose()
 
     print(img)
-    
-    
-    # HAVE TO PAY
-    # loading presentation
-    # ppt = slides.Presentation("./public/test.pptx")
-    # ppt --> pdf
-    # ppt.save("PPT-to-PDF.pdf", slides.export.SaveFormat.PDF)
 
-    
-    # for slide in ppt.slides:
-    #     pic = slide.get_thumbnail(1, 1)
-    #     pic.save("Slide_{num}.jpg".format(num=str(slide.slide_number)), drawing.imaging.ImageFormat.jpeg)
-    #     img.append(pic)
-
-    return seeImg(mod)
+    return addMod(mod)
 
 # will always have six modules
 # will always have seven pics
-@app.route("/seeImg/<mod>")
-def seeImg(mod):
-    link = f"/static/{mod}/{mod}_test"
-
-    pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
-            <img src='/static/{mod}/{mod}_test1.png'> \
-            <img src='/static/{mod}/{mod}_test2.png'> \
-            <img src='/static/{mod}/{mod}_test3.png'> \
-            <img src='/static/{mod}/{mod}_test4.png'> \
-            <img src='/static/{mod}/{mod}_test5.png'> \
-            <img src='/static/{mod}/{mod}_test6.png'>"
-    print(pics)
-
-    # have save images to bytes for bson
+# Will add the png info to the db
+# will return a definition that will delete the pngs from the static folder
+@app.route("/addMod/<mod>")
+def addMod(mod):
     # open db connection
     db = connect()
 
@@ -473,7 +442,7 @@ def seeImg(mod):
     arry = []
     for i in range(7):
         blob = gridfs.GridFS(db)
-        file = f"./static/{mod}/{mod}_test{i}.png"
+        file = f"{mod}_test{i}.png"
         # print(file)
 
         with open(file, 'rb') as f:
@@ -487,12 +456,54 @@ def seeImg(mod):
 
     data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})
     print(data)
-    # data=""
-    
-    # return f"<div>{pics}</div>" 
-    return json.dumps(data, default=str)
+    return deletePng(mod)
 
-    
+@app.route("/seeImg/<mod>")
+def seeImg(mod):
+    link = f"/static/{mod}/{mod}_test"
+
+    pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
+            <img src='/static/{mod}/{mod}_test1.png'> \
+            <img src='/static/{mod}/{mod}_test2.png'> \
+            <img src='/static/{mod}/{mod}_test3.png'> \
+            <img src='/static/{mod}/{mod}_test4.png'> \
+            <img src='/static/{mod}/{mod}_test5.png'> \
+            <img src='/static/{mod}/{mod}_test6.png'>"
+
+    return pics
+
+
+################################################################################
+#
+#                                  Other
+#
+################################################################################
+#turn an int to ObjectId for query searches w specific ID
+def intToObjID(id):
+    id = str(id)    # cast to int
+    s = '0' * (24 - len(id)) + id   # creates a string that 24 length
+                                    # ('0000000000000000xxxxxxxx')
+                                    # if id = xxxxxxxx, then fill lower w 0s
+
+    print(s)
+
+    return bson.ObjectId(id)
+
+# remove pngs after saved to db
+@app.route("/deletePng/<mod>")
+def deletePng(mod):
+    stat = []
+    # going to loop through all the diff pngs saved for a specific module
+    # and delete them from the static folder
+    for i in range(7):
+        file = f'./static/{mod}/{mod}_test{i}.png'
+        try:
+            os.remove(file)
+            stat.append(f"deleted {file} successfuly")
+        except Exception as e:
+            return f"Error in deleting {file}: {e}"
+    return json.dumps(stat, default=str)
+
 
 
 
