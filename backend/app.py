@@ -371,28 +371,59 @@ def getMods():
                                                     # email
 
     # return json.dumps(data, default=str)
-    return retreiveBytesToPng(modules,data)
+    return retreiveBytesToPng(modules,data,"all")
+
+# get images from specific module
+@app.route("/getMod/<mod>", methods=['GET'])
+def getMod(mod):
+    db = connect()          # opens DB connection
+    modules = db["modules"]   #specifically get modules table
+
+    data = []               # make list for the data
+
+    # query when getting a specific module
+    query = { "modName": mod}
+    data = db.modules.find_one(query)    # search for modules with specific
+                                                    # email
+
+    # return json.dumps(data, default=str)
+    return retreiveBytesToPng(modules,data,mod)
 
 # will get the byte imgs and make them into pngs to then send to frontend
-def retreiveBytesToPng(modules, data):
+def retreiveBytesToPng(modules, data, option="all"):
     listBytes = []
-    # will loop through 
-    print(modules.count())
-    for j in range(modules.count()):
-        mod = f"module{j}"
+    if (option == "all"): # want to get all of the modules imgs
+        # will loop through 
+        print(modules.count())
+        for j in range((modules.count())):
+            mod = f'module{j+1}'
+
+            for i in range(7):
+                
+                # print(data[j]["pics"][i])
+                listBytes.append(data[j]["pics"][i])
+                # binary --> pillow
+                imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])
+                imgPillow = Image.open(imgBytes)
+
+                # # Save the image as a PNG file
+                fileName = f"./static/{mod}/{mod}_test{str(i)}.png"
+                imgPillow.save(fileName, format='PNG')
+                print(f"Image successfully saved as {fileName}")
+    else: #want to get specific module bytes
         for i in range(7):
-            
-            print(data[j]["pics"][i])
-            listBytes.append(data[j]["pics"][i])
+            listBytes.append(data["pics"][i])
             # binary --> pillow
-            imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])
+            imgBytes = io.BytesIO(data["pics"][i]["pics"])
             imgPillow = Image.open(imgBytes)
 
             # # Save the image as a PNG file
-            fileName = f"./static/{mod}/{mod}_test{str(i)}.png"
+            fileName = f"./static/{option}/{option}_test{str(i)}.png"
             imgPillow.save(fileName, format='PNG')
             print(f"Image successfully saved as {fileName}")
-    return f"saved imgs to {mod}"
+    
+        
+    return f"saved imgs to static"
 
 # uploading file and saving to static in specified module file
 #  return a definition that will add the pngs to the db "modules"
@@ -459,6 +490,7 @@ def addMod(mod):
     print(data)
     return deletePng(mod)
 
+# get images of a specific module
 @app.route("/seeImg/<mod>")
 def seeImg(mod):
     link = f"/static/{mod}/{mod}_test"
@@ -472,6 +504,95 @@ def seeImg(mod):
             <img src='/static/{mod}/{mod}_test6.png'>"
 
     return pics
+
+@app.route("/seeAllImgs")
+def seeAllImgs():
+    pics = ''
+    db = connect()          # opens DB connection
+    modules = db["modules"]   #specifically get modules table
+    for j in range((modules.count())):
+        mod = f'module{j+1}'
+        link = f"/static/{mod}/{mod}_test"
+
+        pics += f"<img src='/static/{mod}/{mod}_test0.png'> \
+                <img src='/static/{mod}/{mod}_test1.png'> \
+                <img src='/static/{mod}/{mod}_test2.png'> \
+                <img src='/static/{mod}/{mod}_test3.png'> \
+                <img src='/static/{mod}/{mod}_test4.png'> \
+                <img src='/static/{mod}/{mod}_test5.png'> \
+                <img src='/static/{mod}/{mod}_test6.png'>"
+
+    return pics
+
+# edit module
+@app.route("/editMod/<id>/<mod>", methods=['GET', 'POST', 'PUT'])
+def editMod(id, mod):
+    # if changing slide for one of the imgs would need dataform from frontend
+    # then change to bytes
+
+    db = connect()          # opens DB connection
+    modules = db["modules"]   #specifically get modules table
+
+    id = intToObjID(id) # returns type ObjectId for searching specific
+                        # id we want
+
+    query = { "_id": id}
+
+    og = db.modules.find_one({ "_id": id})    # search for desc with specific
+                                                    #  id that si meant to be edited
+                                                    # need the og module name
+    
+    
+    edited = { "$set": { "modName": mod}} #FOR NOW ONLY TESTING CHANGING MOD NAME
+    modules.update_one(query, edited)  # update the info
+
+    # if changing the module name
+    # if change module name then need to change mod name of all pics!
+    db = connect()          # opens DB connection
+    modules = db["modules"]   #specifically get modules table
+
+    query3 = [{'$addFields': {'pics': {'$map': {'input': '$pics', 'as': 'picsA','in': {'$mergeObjects': ['$$picsA', { 'filename': { '$replaceOne': { 'input': '$$picsA.filename', 'find': og["modName"], 'replacement': mod}}}]}}}}}]
+    modules.update_many(query, query3)
+    print("after aggregate")
+
+
+    # will need specific handling if changing just one img or all
+    # if one need to get the specific binary of it with fileName
+    # filename = f"{mod}_test3.png" #FOR TESTING ONLY
+    # print(filename)
+    # queryFileName = {"pics":{"$in": {"pics": filename}}}
+    # found = db.modules.find_one(query)
+                                            
+
+    data = db.modules.find_one({ "_id": id})    # search for desc with specific
+                                                    #  id that was edited
+
+    return json.dumps(data, default=str)
+
+# get images from specific module
+@app.route("/deleteMod/<id>", methods=['GET'])
+def deleteMod(id):
+    db = connect()          # opens DB connection
+    modules = db["modules"]   #specifically get modules table
+
+    id = intToObjID(id)     # returns type ObjectId for searching specific
+                            # id we want
+
+    query = { "_id": id}    # query for specific id
+
+    modules.delete_one(query) #deletes it
+
+    data = db.modules.find_one({ "_id": id})   # search for desc with specific
+                                                    # id. if deleted correctly
+                                                    # then should return null
+
+    data = db.modules.find_one({ "_id": id}) # search for desc with specific
+                                            # id that was edited
+    if data == None:
+        data = "deleted"
+    
+
+    return json.dumps(data, default=str)
 
 
 ################################################################################
