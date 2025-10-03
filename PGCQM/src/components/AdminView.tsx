@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Contact } from './Contact';
 import { Header } from './Header';
 import { Upload, FileText, Trash2, Edit } from 'lucide-react';
+
+import axios from 'axios'; // ADDED
 
 interface AdminViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -23,6 +25,14 @@ interface ModuleData {
   fileName: string;
 }
 
+// adding
+// interface temp {
+//   _id:number;
+//   desc:string;
+//   adminID: number
+// }
+//
+
 export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: AdminViewProps) {
   const [modules, setModules] = useState<ModuleData[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
@@ -35,7 +45,31 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
   
   const [deleteModule, setDeleteModule] = useState<string>('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [tempAboutText, setTempAboutText] = useState(aboutText);
+  const [tempAboutText, setTempAboutText] = useState(aboutText); // rem
+
+  // ADDED
+  const [tempAboutText1, setTempAboutText1] = useState([])
+   useEffect(() => {
+    // api call for description
+    getDesc()
+
+  }, []);
+
+  const getDesc = async() => {
+  const res = await axios (`http://localhost:5000/getDesc/`, {
+      headers: { 'Content-Type': 'application/json'},
+      method: "GET",
+      })
+      .then(res => {
+        const temp = res.data['desc'].toString().replace(/\\n/gi, '\n');
+        console.log(temp)
+          console.log(res.data)
+          // setTempAboutText1(res.data)
+          setTempAboutText1(temp)
+      })
+      .catch(err => console.log(err));
+  };
+  //
 
   const handleFileUpload = (moduleId: number, file: File) => {
     // Check if file is PPT
@@ -93,6 +127,9 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
       return;
     }
     onUpdateAbout(tempAboutText);
+    //ADDED
+      // api call to update db 
+    //
     alert('About - CS 633 section updated successfully!');
   };
 
@@ -244,7 +281,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
                 About Text Content
               </label>
               <Textarea
-                value={tempAboutText}
+                value={tempAboutText1}
                 onChange={(e) => setTempAboutText(e.target.value)}
                 placeholder="Enter the About - CS 633 description text...&#10;&#10;Tip: Use double line breaks to separate paragraphs.&#10;List items will be automatically formatted if they appear in a multi-line section."
                 className="min-h-[200px] resize-y font-mono text-sm"

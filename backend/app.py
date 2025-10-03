@@ -8,12 +8,14 @@ import bson
 import gridfs
 from dotenv import load_dotenv
 import json
+from flask_cors import CORS
 
 # for slides (free but have logo near top middle)
 from spire.presentation.common import *
 from spire.presentation import *
 
 app = Flask(__name__)
+CORS(app)
 
 # loading to read .env info
 load_dotenv()
@@ -76,24 +78,34 @@ def getAllAdmins():
 
 #-------------------------------------------------------------------------------
 #
-# Description: get aspecific admin info by their email
+# Description: get a specific admin info by their email and check if we should
 #
 # params: email --> email of the admin 
+#         password --> password of admin
 # 
-# return: data --> query data in json
+# return: stat --> 400 if wrong completely
+#                  300 if email right but wrong password
+#                  200 if correct for both
 # 
 #-------------------------------------------------------------------------------
-@app.route("/getAdmin/<email>", methods=['GET'])
-def getAdmin(email):
+@app.route("/getAdmin/<email>/<password>", methods=['GET'])
+def getAdmin(email, password):
     db = connect()                      # opens DB connection
     admins = db["admins"]               #specifically get admins table
+    stat = '400'                        # default 400, dont login
 
     query = { "email": email}           # query to find admin of specidic email
     data = db.admins.find_one(query)    # search for admin
 
-    # print(data)
+    if(data != None):                   # ensure user email found in db
+        # case where email and password correct. let login
+        if(data['email'] == email and data['password'] == password):
+            stat = '200'
+        # case where email correct, password wrong. dont login
+        elif ((data['email'] == email) and (data['password'] != password)):
+            stat = '300'
 
-    return json.dumps(data, default=str)
+    return stat
 
 #-------------------------------------------------------------------------------
 #
@@ -251,7 +263,7 @@ def getDescs():
 @app.route("/getDesc/", methods=['GET'])
 def getDetails():
     db = connect()                      # opens DB connection
-    descriptions = db["descriptions"]   #specifically get descriptions table
+    descriptions = db["descriptions"]   # specifically get descriptions table
 
     data = []                           # make list for the data
 
@@ -263,6 +275,8 @@ def getDetails():
 
     query = { "adminID": id}               # want to find desc that attached to the admin id
     data = db.descriptions.find_one(query) # search for desc w prof _id
+
+    print(data)
 
     return json.dumps(data, default=str)
 

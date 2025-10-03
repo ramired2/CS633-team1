@@ -6,6 +6,8 @@ import { Card } from './ui/card';
 import { Contact } from './Contact';
 import { Header } from './Header';
 
+import axios from 'axios'; // ADDED
+
 interface LoginPageProps {
   onLogin: () => void;
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -15,11 +17,44 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
+  // ADDED
+  const [stat, setStat] = useState('');
+  const verifyCredentials = async() => {
+  const res = await axios (`http://localhost:5000/getAdmin/${userId.trim()}/${password.trim()}`, {
+      headers: { 'Content-Type': 'application/json'},
+      method: "GET",
+      })
+      .then(res => {
+          console.log(res.data)
+          setStat(res.data)
+
+          if(res.data == '200'){
+            console.log("stat was: ", res.data)
+            onLogin();
+          }
+          else if(res.data == '300'){
+            console.log("stat was: ", res.data)
+            alert('Password was incorrect. Please try again.');
+          }
+          else {
+            console.log("stat was: ", res.data)
+              alert('Email and assword were incorrect. Please try again.');
+          }
+      })
+      .catch(err => console.log(err));
+  };
+    //
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple mock validation - accept any non-empty credentials
     if (userId.trim() && password.trim()) {
-      onLogin();
+      // ADDED
+      verifyCredentials();
+      //
+
+      // onLogin(); // rem
+      
     } else {
       alert('Please enter both User ID and Password');
     }
