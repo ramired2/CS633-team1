@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask import request
+from flask import request, send_file
 import pymongo
 from bson.objectid import ObjectId
 import os
@@ -680,13 +680,21 @@ def addMod(mod):
 @app.route("/seeImg/<mod>", methods=['POST', 'GET'])
 def seeImg(mod):
     # string of html to render the pics of  a module
-    pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
-            <img src='/static/{mod}/{mod}_test1.png'> \
-            <img src='/static/{mod}/{mod}_test2.png'> \
-            <img src='/static/{mod}/{mod}_test3.png'> \
-            <img src='/static/{mod}/{mod}_test4.png'> \
-            <img src='/static/{mod}/{mod}_test5.png'> \
-            <img src='/static/{mod}/{mod}_test6.png'>"
+    pics = ['/static/{mod}/{mod}_test0.png',
+    '/static/{mod}/{mod}_test1.png',
+    '/static/{mod}/{mod}_test2.png',
+    '/static/{mod}/{mod}_test3.png',
+    '/static/{mod}/{mod}_test4.png',
+    '/static/{mod}/{mod}_test5.png',
+    '/static/{mod}/{mod}_test6.png']
+
+    # pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
+    #         <img src='/static/{mod}/{mod}_test1.png'> \
+    #         <img src='/static/{mod}/{mod}_test2.png'> \
+    #         <img src='/static/{mod}/{mod}_test3.png'> \
+    #         <img src='/static/{mod}/{mod}_test4.png'> \
+    #         <img src='/static/{mod}/{mod}_test5.png'> \
+    #         <img src='/static/{mod}/{mod}_test6.png'>"
 
     return pics
 

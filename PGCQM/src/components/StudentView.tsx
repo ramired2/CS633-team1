@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -7,6 +7,7 @@ import { ImageViewer } from './ImageViewer';
 import { Contact } from './Contact';
 import { Header } from './Header';
 import { Maximize, BookOpen, FileText, Target, PenTool, HelpCircle, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import axios from 'axios'; // ADDED
 
 interface StudentViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -71,6 +72,17 @@ const moduleImages = {
   }
 };
 
+// setModuleImages({"1": {
+//                               "key-concepts": link + res.data[0],
+//                               "summary": link + res.data[1],
+//                               "principles": link + res.data[2],
+//                               "do-notes": link + res.data[3],
+//                               "quiz": link + res.data[4],
+//                               "faq": link + res.data[5]
+//                             }})
+
+// const [moduleImages, setModuleImages] = useState({});
+
 export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   const [selectedModule, setSelectedModule] = useState("1");
   const [selectedContent, setSelectedContent] = useState('key-concepts');
@@ -89,6 +101,35 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   const getCurrentImage = () => {
     return moduleImages[selectedModule]?.[selectedContent] || moduleImages["1"]["key-concepts"];
   };
+
+  // ADDED 
+  // api for getting the images
+  const [tempAboutText1, setTempAboutText1] = useState([])
+   useEffect(() => {
+    // api call for description
+    getMods()
+    console.log("abtSection")
+
+  }, []);
+
+  const getMods = async() => {
+    let temp = "module1"
+    const res = await axios (`http://localhost:5000/seeImg/${temp}`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        })
+        .then(res => {
+            console.log(res.data)
+            console.log(typeof moduleImages)
+            const link = "http://localhost:5000/static/"
+
+            setTempAboutText1(res.data)
+
+        })
+        .catch(err => console.log(err));
+  };
+
+  // 
 
   return (
     <div className="min-h-screen bg-gray-50">
