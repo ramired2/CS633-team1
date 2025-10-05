@@ -25,14 +25,6 @@ interface ModuleData {
   fileName: string;
 }
 
-// adding
-// interface temp {
-//   _id:number;
-//   desc:string;
-//   adminID: number
-// }
-//
-
 export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: AdminViewProps) {
   const [modules, setModules] = useState<ModuleData[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
@@ -45,31 +37,15 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
   
   const [deleteModule, setDeleteModule] = useState<string>('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [tempAboutText, setTempAboutText] = useState(aboutText); // rem
+  const [tempAboutText, setTempAboutText] = useState(aboutText);
+
+  // added
+  const formData = new FormData();
+  //
 
   // ADDED
-  const [tempAboutText1, setTempAboutText1] = useState([])
-   useEffect(() => {
-    // api call for description
-    getDesc()
-
-  }, []);
-
-  const getDesc = async() => {
-  const res = await axios (`http://localhost:5000/getDesc/`, {
-      headers: { 'Content-Type': 'application/json'},
-      method: "GET",
-      })
-      .then(res => {
-        const temp = res.data['desc'].toString().replace(/\\n/gi, '\n');
-        console.log(temp)
-          console.log(res.data)
-          // setTempAboutText1(res.data)
-          setTempAboutText1(temp)
-      })
-      .catch(err => console.log(err));
-  };
-  //
+  let [totFiles, setTotFiles] = useState<File[]>();
+  // 
 
   const handleFileUpload = (moduleId: number, file: File) => {
     // Check if file is PPT
@@ -87,7 +63,29 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
         ? { ...module, file, fileName: file.name }
         : module
     ));
+
+    setTotFiles([file])
+    
   };
+
+  // ADDED
+  const addMod = async(formData) => {
+    formData.forEach((value, key) => console.log(key, value))
+
+    let addModLink = `http://localhost:5000/upload/module${1}`
+    
+    await axios.post(addModLink, formData)
+    .then(result => {
+      console.log(result.data); 
+
+      // if the file did not send for some reason server sends err msg "empty"
+      if(result.data.includes('empty')) {
+        alert('Error loading file. Try again later.')
+      }
+    })
+    .catch(err => console.log(err));
+  }
+  // 
 
   const handleSubmit = () => {
     const hasUploadedFile = modules.some(module => module.file !== null);
@@ -96,8 +94,31 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
       alert('Please upload at least one PPT file before submitting');
       return;
     }
+
+    // ADDED api call to send to flask
+    console.log(`files to upload: `)
+    console.log(modules[0]['file'])
+    console.log(`${modules[0]['id']}  ${modules[0]['title']} { ${modules[0]['file']!['name']} ${modules[0]['file']!['size']} ${modules[0]['file']!['type']}  }  ${modules[0]['id']}  ${modules[0]['fileName']}`)
+    // id: 1, title: 'Module 1', file: null, fileName: 'File Location'
+    // const formData = new FormData();
+    // modules.forEach((file,idx)=> {
+    //   formData.append('file', file);
+    //   // 
+    //   console.log(file.file)
+    //   console.log(formData)
+    // })
+    formData.append('file', totFiles![0]);
+    console.log(totFiles)
+    console.log(formData)
+
+    formData.forEach((value, key) => console.log(key, value))
     
-    alert('Files submitted successfully!');
+
+    // api call
+    // /upload/<mod>
+    addMod(formData);
+    
+    // alert('Files submitted successfully!');
   };
 
   const handleDelete = () => {
@@ -281,7 +302,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
                 About Text Content
               </label>
               <Textarea
-                value={tempAboutText1}
+                value={aboutText}
                 onChange={(e) => setTempAboutText(e.target.value)}
                 placeholder="Enter the About - CS 633 description text...&#10;&#10;Tip: Use double line breaks to separate paragraphs.&#10;List items will be automatically formatted if they appear in a multi-line section."
                 className="min-h-[200px] resize-y font-mono text-sm"

@@ -1,7 +1,9 @@
 from flask import Flask, render_template
+from flask import request
 import pymongo
 from bson.objectid import ObjectId
 import os
+from werkzeug.utils import secure_filename
 import io
 from PIL import Image
 import bson
@@ -15,6 +17,8 @@ from spire.presentation.common import *
 from spire.presentation import *
 
 app = Flask(__name__)
+UPLOAD_FOLDER = './static'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
 CORS(app)
 
 # loading to read .env info
@@ -591,15 +595,29 @@ def retreiveBytesToPng(modules, data, option="all"):
 # return: addMod(mod) --> will add the module to db
 # 
 #-------------------------------------------------------------------------------
-@app.route("/upload/<mod>")
+@app.route("/upload/<mod>", methods=['POST', 'GET', 'OPTIONS'])
 def upload(mod):
+    
+    if not request.files:           # checks if the file was received
+        return str({'message': 'empty'}), 200
+
+    file = request.files['file']
+
+    # save ppt to static
+    print(file)
+    filename = secure_filename(file.filename)
+    print(filename)
+    file.save(os.path.join("./static", filename))
+
+
     img = []                        # list to save imgs
 
     presentation = Presentation()   # instance of ppt
 
     # In deployment will read the ppt from uploaded file from frontend in 
     # FormData, but for now testing file is in static
-    presentation.LoadFromFile("./static/module1_test.pptx")
+    presentation.LoadFromFile(f'./static/{filename}')
+    # presentation.LoadFromFile("./static/module1_test.pptx")
 
     for i, slide in enumerate(presentation.Slides):         # loop thru # slides
         fileName =f"./static/{mod}/{mod}_test{str(i)}.png" # folder location + name
@@ -627,7 +645,7 @@ def upload(mod):
 # return: deletePng() --> def that will delete the pngs from static
 # 
 #-------------------------------------------------------------------------------
-@app.route("/addMod/<mod>")
+@app.route("/addMod/<mod>", methods=['POST', 'GET', 'OPTIONS'])
 def addMod(mod):
     db = connect()          # open db connection
     modules = db["modules"] # will create table modules
@@ -635,7 +653,7 @@ def addMod(mod):
     arry = []               # list to store PNGs info (filename and binary data)     
     for i in range(7):      # loop to go thru the diff pngs to bytes and append to arry
         blob = gridfs.GridFS(db)    # creating blob
-        file = f"{mod}_test{i}.png" # file name
+        file = f"./static/{mod}/{mod}_test{i}.png" # file name
 
         with open(file, 'rb') as f: # opens the file
             contents = f.read()     # read the file
@@ -659,7 +677,7 @@ def addMod(mod):
 # return: html of the pics to be output
 # 
 #-------------------------------------------------------------------------------
-@app.route("/seeImg/<mod>")
+@app.route("/seeImg/<mod>", methods=['POST', 'GET'])
 def seeImg(mod):
     # string of html to render the pics of  a module
     pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
@@ -681,7 +699,7 @@ def seeImg(mod):
 # return: html of the pics to be output
 # 
 #-------------------------------------------------------------------------------
-@app.route("/seeAllImgs")
+@app.route("/seeAllImgs", methods=['POST', 'GET', 'PUT'])
 def seeAllImgs():
     pics = ''
     db = connect()                          # opens DB connection
@@ -715,7 +733,7 @@ def seeAllImgs():
 # return: data --> the edited module in json
 # 
 #-------------------------------------------------------------------------------
-@app.route("/editMod/<id>/<mod>", methods=['GET', 'POST', 'PUT'])
+@app.route("/editMod/<id>/<mod>", methods=['GET', 'POST', 'PUT', 'OPTIONS'])
 def editMod(id, mod):
     # when deployed will use FromData to get info from frontend
 
@@ -790,7 +808,7 @@ def editMod(id, mod):
 #                   module that was supposed to be deleted
 # 
 #-------------------------------------------------------------------------------
-@app.route("/deleteMod/<id>", methods=['GET'])
+@app.route("/deleteMod/<id>", methods=['GET', 'POST', 'PUT', 'OPTIONS'])
 def deleteMod(id):
     db = connect()                              # opens DB connection
     modules = db["modules"]                     # specifically get modules table
