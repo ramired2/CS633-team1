@@ -561,7 +561,7 @@ def retreiveBytesToPng(modules, data, option="all"):
         for j in range((modules.count())):  # will loop through modules
             mod = f'module{j+1}'            # module name
 
-            for i in range(7):                                      # loop through the pngs for ea module
+            for i in range(6):                                      # loop through the pngs for ea module
                 listBytes.append(data[j]["pics"][i])                # save binary info to png to list
 
                 imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])   # binary --> pillow type
@@ -571,7 +571,7 @@ def retreiveBytesToPng(modules, data, option="all"):
                 imgPillow.save(fileName, format='PNG')              # Save the image as a PNG file
                 # print(f"Image successfully saved as {fileName}")
     else:                                                           #want to get specific module bytes
-        for i in range(7):      # only loop through PNGs specific mod                                       
+        for i in range(6):      # only loop through PNGs specific mod                                       
             listBytes.append(data["pics"][i])                       # save binary info to png to list
 
             imgBytes = io.BytesIO(data["pics"][i]["pics"])          # binary --> pillow type
@@ -581,7 +581,7 @@ def retreiveBytesToPng(modules, data, option="all"):
             imgPillow.save(fileName, format='PNG')                  # Save the image as a PNG file
             # print(f"Image successfully saved as {fileName}")
         
-    return f"saved imgs to static"
+    return seeImgs('all')
 
 # uploading file and saving to static in specified module file
 #  return a definition that will add the pngs to the db "modules"
@@ -651,7 +651,7 @@ def addMod(mod):
     modules = db["modules"] # will create table modules
 
     arry = []               # list to store PNGs info (filename and binary data)     
-    for i in range(7):      # loop to go thru the diff pngs to bytes and append to arry
+    for i in range(6):      # loop to go thru the diff pngs to bytes and append to arry
         blob = gridfs.GridFS(db)    # creating blob
         file = f"./static/{mod}/{mod}_test{i}.png" # file name
 
@@ -680,21 +680,20 @@ def addMod(mod):
 @app.route("/seeImg/<mod>", methods=['POST', 'GET'])
 def seeImg(mod):
     # string of html to render the pics of  a module
-    pics = ['/static/{mod}/{mod}_test0.png',
-    '/static/{mod}/{mod}_test1.png',
-    '/static/{mod}/{mod}_test2.png',
-    '/static/{mod}/{mod}_test3.png',
-    '/static/{mod}/{mod}_test4.png',
-    '/static/{mod}/{mod}_test5.png',
-    '/static/{mod}/{mod}_test6.png']
+    pics = {mod[-1]:   {
+                    "key-concepts": f'http://localhost:5000/static/{mod}/{mod}_test0.png',
+                    "summary": f'http://localhost:5000/static/{mod}/{mod}_test1.png',
+                    "principles": f'http://localhost:5000/static/{mod}/{mod}_test2.png',
+                    "do-notes": f'http://localhost:5000/static/{mod}/{mod}_test3.png',
+                    "quiz": f'http://localhost:5000/static/{mod}/{mod}_test4.png',
+                    "faq": f'http://localhost:5000/static/{mod}/{mod}_test5.png'}}
 
     # pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
     #         <img src='/static/{mod}/{mod}_test1.png'> \
     #         <img src='/static/{mod}/{mod}_test2.png'> \
     #         <img src='/static/{mod}/{mod}_test3.png'> \
     #         <img src='/static/{mod}/{mod}_test4.png'> \
-    #         <img src='/static/{mod}/{mod}_test5.png'> \
-    #         <img src='/static/{mod}/{mod}_test6.png'>"
+    #         <img src='/static/{mod}/{mod}_test5.png'>"
 
     return pics
 
@@ -707,22 +706,33 @@ def seeImg(mod):
 # return: html of the pics to be output
 # 
 #-------------------------------------------------------------------------------
-@app.route("/seeAllImgs", methods=['POST', 'GET', 'PUT'])
-def seeAllImgs():
-    pics = ''
+@app.route("/seeImgs/<option>", methods=['POST', 'GET', 'PUT'])
+def seeImgs(option):
     db = connect()                          # opens DB connection
     modules = db["modules"]                 # specifically get modules table
-    for j in range((modules.count())):      # loop thru modules
-        mod = f'module{j+1}'                # specific module looking at atm
+    pics = {}
 
-        # string of html to render the pics of  a module
-        pics += f"<img src='/static/{mod}/{mod}_test0.png'> \
-                <img src='/static/{mod}/{mod}_test1.png'> \
-                <img src='/static/{mod}/{mod}_test2.png'> \
-                <img src='/static/{mod}/{mod}_test3.png'> \
-                <img src='/static/{mod}/{mod}_test4.png'> \
-                <img src='/static/{mod}/{mod}_test5.png'> \
-                <img src='/static/{mod}/{mod}_test6.png'>"
+    if(str(option) == 'all'):
+        print("get all imgs")
+        for j in range((modules.count())):      # loop thru modules
+            mod = f'module{j+1}'                # specific module looking at atm
+
+            pics.update( {mod[-1]:   {
+                                "key-concepts": f'http://localhost:5000/static/{mod}/{mod}_test0.png',
+                                "summary": f'http://localhost:5000/static/{mod}/{mod}_test1.png',
+                                "principles": f'http://localhost:5000/static/{mod}/{mod}_test2.png',
+                                "do-notes": f'http://localhost:5000/static/{mod}/{mod}_test3.png',
+                                "quiz": f'http://localhost:5000/static/{mod}/{mod}_test4.png',
+                                "faq": f'http://localhost:5000/static/{mod}/{mod}_test5.png'}} )
+    else:
+        print(f"get imgs from module {option}")
+        pics.update({mod:   {
+                            "key-concepts": f'http://localhost:5000/static/{option}/{option}_test0.png',
+                            "summary": f'http://localhost:5000/static/{option}/{option}_test1.png',
+                            "principles": f'http://localhost:5000/static/{option}/{option}_test2.png',
+                            "do-notes": f'http://localhost:5000/static/{option}/{option}_test3.png',
+                            "quiz": f'http://localhost:5000/static/{option}/{option}_test4.png',
+                            "faq": f'http://localhost:5000/static/{option}/{option}_test5.png'}})
 
     return pics
 
@@ -762,7 +772,7 @@ def editMod(id, mod):
         # if doing all
             # for loop to go thru the diff pngs to bytes and append to arry
             # arry = []
-            # for i in range(7):
+            # for i in range(6):
             #     blob = gridfs.GridFS(db)
             #     file = f"{mod}_test{i}.png"
 
@@ -873,7 +883,7 @@ def deletePng(mod):
     stat = []
     # going to loop through all the diff pngs saved for a specific module
     # and delete them from the static folder
-    for i in range(7):
+    for i in range(6):
         file = f'./static/{mod}/{mod}_test{i}.png'
         try:
             os.remove(file)
