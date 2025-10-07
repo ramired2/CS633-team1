@@ -25,7 +25,7 @@ interface ModuleData {
   fileName: string;
 }
 
-export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: AdminViewProps) {
+export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdateAbout }: AdminViewProps) {
   const [modules, setModules] = useState<ModuleData[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
     { id: 2, title: 'Module 2', file: null, fileName: 'File Location' },
@@ -41,10 +41,66 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
 
   // added
   const formData = new FormData();
-  //
-
-  // ADDED
+  const [modIds, setModIds] = useState([])
   let [totFiles, setTotFiles] = useState<File[]>();
+  const [stat, setStat] = useState(0)
+
+     useEffect(() => {
+      // api call for description
+      getIds()
+  
+    }, []);
+
+    const getIds = async() => {
+    // let temp = "module1"
+    const res = await axios (`http://localhost:5000/getModNameID`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        })
+        .then(res => {
+            console.log(res.data)
+
+            setModIds(res.data)
+
+        })
+        .catch(err => console.log(err));
+  };
+
+      const deletingMod = async() => {
+    const res = await axios (`http://localhost:5000/deleteMod/${deleteModule}`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "DELETE",
+        })
+        .then(res => {
+            console.log(`deleting ${deleteModule}`)
+            console.log(res.data)
+        })
+        .catch(err => console.log(err));
+  };
+
+  
+    const editDesc = async() => {
+    // let temp = "module1"
+    const res = await axios (`http://localhost:5000/editDesc`, {
+        method:'PUT',
+        headers: { 'Content-Type': 'application/json'},
+        params: {
+          id: abtTextID,
+          description: tempAboutText
+        },
+        })
+        .then(res => {
+            console.log(res.data)
+            if (res.data == '200'){
+              setStat(200)
+            }
+
+        })
+        .catch(err => console.log(err));
+  };
+
+
+
   // 
 
   const handleFileUpload = (moduleId: number, file: File) => {
@@ -131,12 +187,14 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
   };
 
   const confirmDelete = () => {
+    console.log(deleteModule)
     const moduleNum = parseInt(deleteModule);
-    setModules(prev => prev.map(module => 
-      module.id === moduleNum 
-        ? { ...module, file: null, fileName: 'File Location' }
-        : module
-    ));
+    // setModules(prev => prev.map(module => 
+    //   module.id === moduleNum 
+    //     ? { ...module, file: null, fileName: 'File Location' }
+    //     : module
+    // ));
+    deletingMod()
     setDeleteModule('');
     setShowDeleteConfirm(false);
     alert(`Module ${moduleNum} file deleted successfully!`);
@@ -150,8 +208,16 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
     onUpdateAbout(tempAboutText);
     //ADDED
       // api call to update db 
+      editDesc();
+
+    if(stat == 200) {
+      alert('About - CS 633 section updated successfully!');
+    }
+    else {
+      alert('There was an error updating. Please try again later.');
+    }
     //
-    alert('About - CS 633 section updated successfully!');
+    
   };
 
   return (
@@ -165,6 +231,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
           <div className="text-center mb-4">
             <h3 className="text-lg font-bold text-[#2D2926] mb-1">Sequence of the PPT Slide</h3>
             <p className="text-sm text-[#2D2926]">Standard structure for each module presentation</p>
+            <p className="text-sm text-[#2D2926]">Format file names as: 'Module#.ppt/pptx'</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
@@ -266,9 +333,9 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
                   <SelectValue placeholder="Choose" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5, 6].map((num) => (
-                    <SelectItem key={num} value={num.toString()}>
-                      Module {num}
+                  {modIds.map((num) => (
+                    <SelectItem key={num['_id']} value={num['_id'].toString()}>
+                      Module {num['modName'].substr(-1) || "loading"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -302,7 +369,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
                 About Text Content
               </label>
               <Textarea
-                value={aboutText}
+                value={tempAboutText}
                 onChange={(e) => setTempAboutText(e.target.value)}
                 placeholder="Enter the About - CS 633 description text...&#10;&#10;Tip: Use double line breaks to separate paragraphs.&#10;List items will be automatically formatted if they appear in a multi-line section."
                 className="min-h-[200px] resize-y font-mono text-sm"
@@ -342,7 +409,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, onUpdateAbout }: Ad
               Confirm Delete
             </h3>
             <p className="mb-6 text-gray-700">
-              Are you sure you want to delete Module {deleteModule}? This action cannot be undone.
+              Are you sure you want to delete this module? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <Button

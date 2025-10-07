@@ -326,8 +326,12 @@ def addDesc(desc, adminID):
 # return: data --> edited info in json
 # 
 #-------------------------------------------------------------------------------
-@app.route("/editDesc/<desc>/<id>", methods=['GET', 'POST', 'PUT'])
-def editDesc(desc, id):
+@app.route("/editDesc", methods=['PUT', 'OPTIONS', 'GET'])
+def editDesc():
+    stat = 200
+    id = request.args.get('id')
+    desc = request.args.get('description')
+    
     db = connect()                      # opens DB connection
     descriptions = db["descriptions"]   # specifically get descriptions table
 
@@ -337,13 +341,14 @@ def editDesc(desc, id):
     edited = { "$set": { "desc": desc } }   # will only change description. 
                                             # not the adminID
 
-    descriptions.update_one(query, edited)  # update the info
+    res = descriptions.update_one(query, edited)  # update the info
+    changed = res.acknowledged                      # if query ran successfuly
 
-    data = db.descriptions.find_one({ "_id": id}) # search for desc with specific
-                                                  # id that was edited
+    if res == False:        # if curr desc not same as desired, err editing
+        stat = 400
     
 
-    return json.dumps(data, default=str)
+    return f"{stat}"
 
 #-------------------------------------------------------------------------------
 #
@@ -510,10 +515,32 @@ def getMods():
 
     data = []                   # make list for the data
 
-    for x in modules.find():    # parse thru info and add ea entry to data
+    for x in modules.find().sort("modName"):    # parse thru info and add ea entry to data
         data.append(x)
 
     return retreiveBytesToPng(modules,data,"all")
+
+#-------------------------------------------------------------------------------
+#
+# Description: gets all the modules
+#
+# params: NONE
+# 
+# return: retreiveBytesToPng() --> gets bytes of images from the db and converts
+#                                  to png and saves to static folder
+# 
+#-------------------------------------------------------------------------------
+@app.route("/getModNameID", methods=['GET'])
+def getModNameID():
+    db = connect()              # opens DB connection
+    modules = db["modules"]     # specifically get modules table
+
+    data = []                   # make list for the data
+
+    for x in modules.find({}, {"pics":0}).sort("modName"):   # parse thru info and add ea entry to data
+        data.append(x)
+
+    return json.dumps(data, default=str)
 
 #-------------------------------------------------------------------------------
 #
@@ -826,7 +853,7 @@ def editMod(id, mod):
 #                   module that was supposed to be deleted
 # 
 #-------------------------------------------------------------------------------
-@app.route("/deleteMod/<id>", methods=['GET', 'POST', 'PUT', 'OPTIONS'])
+@app.route("/deleteMod/<id>", methods=['GET', 'DELETE', 'PUT', 'OPTIONS'])
 def deleteMod(id):
     db = connect()                              # opens DB connection
     modules = db["modules"]                     # specifically get modules table
@@ -838,6 +865,8 @@ def deleteMod(id):
     modules.delete_one(query)                  # deletes it
 
     data = db.modules.find_one({ "_id": id})   # check if id found after deleted
+
+    # delete images from static
 
     if data == None:                           # if none then deleted success
         data = "deleted"

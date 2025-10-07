@@ -29,6 +29,7 @@ export default function App() {
 
 // added
 const [aboutText, setAboutText] = useState([])
+const [abtTextID, setAabtTextID] = useState('')
 
    useEffect(() => {
     // api call for description
@@ -47,6 +48,7 @@ const [aboutText, setAboutText] = useState([])
             console.log(res.data)
             // setTempAboutText1(res.data)
             setAboutText(temp)
+            setAabtTextID(res.data['_id'].toString())
 
         })
         .catch(err => console.log(err));
@@ -88,6 +90,7 @@ const [aboutText, setAboutText] = useState([])
           onNavigate={navigateToPage} 
           onLogout={handleLogout} 
           aboutText={aboutText}
+          abtTextID={abtTextID}
           onUpdateAbout={handleUpdateAbout}
         />
       )}
