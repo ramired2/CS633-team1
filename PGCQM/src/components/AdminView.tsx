@@ -25,8 +25,12 @@ interface ModuleData {
   fileName: string;
 }
 
+// interface filesAdd {
+//     file: File | null;
+// }
+
 export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdateAbout }: AdminViewProps) {
-  const [modules, setModules] = useState<ModuleData[]>([
+  const [modules, setModules] = useState<File[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
     { id: 2, title: 'Module 2', file: null, fileName: 'File Location' },
     { id: 3, title: 'Module 3', file: null, fileName: 'File Location' },
@@ -99,9 +103,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         .catch(err => console.log(err));
   };
 
-
-
-  // 
+  //
 
   const handleFileUpload = (moduleId: number, file: File) => {
     // Check if file is PPT
@@ -120,15 +122,18 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         : module
     ));
 
-    setTotFiles([file])
+    // setTotFiles([file])
+
+    setTotFiles([...totFiles??[], file])
+    console.log(totFiles)
     
   };
 
   // ADDED
   const addMod = async(formData) => {
-    formData.forEach((value, key) => console.log(key, value))
+    // formData.forEach((value, key) => console.log(key, value))
 
-    let addModLink = `http://localhost:5000/upload/module${1}`
+    let addModLink = `http://localhost:5000/upload`
     
     await axios.post(addModLink, formData)
     .then(result => {
@@ -152,27 +157,21 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     }
 
     // ADDED api call to send to flask
-    console.log(`files to upload: `)
-    console.log(modules[0]['file'])
-    console.log(`${modules[0]['id']}  ${modules[0]['title']} { ${modules[0]['file']!['name']} ${modules[0]['file']!['size']} ${modules[0]['file']!['type']}  }  ${modules[0]['id']}  ${modules[0]['fileName']}`)
-    // id: 1, title: 'Module 1', file: null, fileName: 'File Location'
-    // const formData = new FormData();
-    // modules.forEach((file,idx)=> {
-    //   formData.append('file', file);
-    //   // 
-    //   console.log(file.file)
-    //   console.log(formData)
-    // })
-    formData.append('file', totFiles![0]);
+    totFiles?.forEach((indivFile) => formData.append('file', indivFile))
+    
+    // formData.append('file', totFiles![0]);
     console.log(totFiles)
     console.log(formData)
 
-    formData.forEach((value, key) => console.log(key, value))
+    // formData.forEach((value, key) => console.log(key, value))
     
 
     // api call
     // /upload/<mod>
     addMod(formData);
+
+    // setTotFiles([]) // clear out files to b submitted
+    // have to renew rest of data
     
     // alert('Files submitted successfully!');
   };
@@ -189,11 +188,6 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const confirmDelete = () => {
     console.log(deleteModule)
     const moduleNum = parseInt(deleteModule);
-    // setModules(prev => prev.map(module => 
-    //   module.id === moduleNum 
-    //     ? { ...module, file: null, fileName: 'File Location' }
-    //     : module
-    // ));
     deletingMod()
     setDeleteModule('');
     setShowDeleteConfirm(false);

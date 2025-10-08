@@ -483,7 +483,7 @@ def retreiveBytesToPng(modules, data, option="all"):
                 imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])   # binary --> pillow type
                 imgPillow = Image.open(imgBytes)                    # open the img info and put in imgPillow 
 
-                fileName = f"./static/{mod}/{mod}_test{str(i)}.png" # name of file + where storing
+                fileName = f"./static/{mod}/{mod}_{str(i)}.png" # name of file + where storing
                 imgPillow.save(fileName, format='PNG')              # Save the image as a PNG file
                 # print(f"Image successfully saved as {fileName}")
     else:                                                           #want to get specific module bytes
@@ -493,7 +493,7 @@ def retreiveBytesToPng(modules, data, option="all"):
             imgBytes = io.BytesIO(data["pics"][i]["pics"])          # binary --> pillow type
             imgPillow = Image.open(imgBytes)                        # open the img info and put in imgPillow 
 
-            fileName = f"./static/{option}/{option}_test{str(i)}.png" # name of file + where storing
+            fileName = f"./static/{option}/{option}_{str(i)}.png" # name of file + where storing
             imgPillow.save(fileName, format='PNG')                  # Save the image as a PNG file
             # print(f"Image successfully saved as {fileName}")
         
@@ -509,39 +509,55 @@ def retreiveBytesToPng(modules, data, option="all"):
 # return: addMod(mod) --> will add the module to db
 # 
 #-------------------------------------------------------------------------------
-@app.route("/upload/<mod>", methods=['POST', 'GET', 'OPTIONS'])
-def upload(mod):
+@app.route("/upload", methods=['POST', 'GET', 'OPTIONS'])
+def upload():
+    # print(request.files)
     
     if not request.files:           # checks if the file was received
         return str({'message': 'empty'}), 200
+    
+    files = request.files.getlist('file')
 
-    file = request.files['file']    # indiv file being sent
+    # print(type(files))
+    for file in files:
+        # file = request.files['file']    # indiv file being sent
 
-    # save ppt to static
-    # print(file)
-    filename = secure_filename(file.filename)       # get file name
-    # print(filename)
-    file.save(os.path.join("./static", filename))   # save file to static folder
+        # save ppt to static
+        print(file)
+        filename = secure_filename(file.filename[:7])       # get file name -- all files start with module#
+        # filenameExtension = secure_filename(file.filename[6:])
+        if('pptx' in file.filename):
+            filenameExtension = '.pptx'
+        
+        else:
+            filenameExtension = '.ppt'
+        
+        file.save(os.path.join("./static", f'{filename}_temp{filenameExtension}').replace("\\","/") )  # save file to static folder
 
-    img = []                        # list to save imgs
+        img = []                        # list to save imgs
 
-    presentation = Presentation()   # instance of ppt
+        presentation = Presentation()   # instance of ppt
 
-    # load ppt
-    presentation.LoadFromFile(f'./static/{filename}')
+        print(f'FILE SHOULD BE IN./static/{filename}{filenameExtension}')
 
-    for i, slide in enumerate(presentation.Slides):         # loop thru # slides
-        fileName =f"./static/{mod}/{mod}_test{str(i)}.png"  # folder location + name
-       
-        image = slide.SaveAsImage() # turn to png
-        img.append(image)           # append to list of images
+        # load ppt
+        presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
 
-        image.Save(fileName)        # save to static 
-        image.Dispose()             # get rid of instance
+        for i, slide in enumerate(presentation.Slides):         # loop thru # slides
+            fileName =f"./static/{filename}/{filename}_{str(i)}.png"  # folder location + name
+        
+            image = slide.SaveAsImage() # turn to png
+            img.append(image)           # append to list of images
 
-    presentation.Dispose()          # get rid of ppt instance
+            image.Save(fileName)        # save to static 
+            image.Dispose()             # get rid of instance
 
-    return addMod(mod)
+        presentation.Dispose()          # get rid of ppt instance
+    
+    # numAdd = len(files)
+
+    return addMod(files)
+    # return "hi"
 
 #-------------------------------------------------------------------------------
 #
@@ -555,27 +571,33 @@ def upload(mod):
 # 
 #-------------------------------------------------------------------------------
 @app.route("/addMod/<mod>", methods=['POST', 'GET', 'OPTIONS'])
-def addMod(mod):
+def addMod(files):
     db = connect()          # open db connection
     modules = db["modules"] # will create table modules
 
-    arry = []               # list to store PNGs info (filename and binary data)     
-    for i in range(6):      # loop to go thru the diff pngs to bytes and append to arry
-        blob = gridfs.GridFS(db)    # creating blob
-        file = f"./static/{mod}/{mod}_test{i}.png" # file name
+    arry = []               # list to store PNGs info (filename and binary data)
 
-        with open(file, 'rb') as f: # opens the file
-            contents = f.read()     # read the file
+    for file in files:      # loop thru modules
+        mod = f'{file.filename[:7]}'                # specific module looking at atm
 
-        arry.append({"filename": file, "pics": contents})   # add png info to arry
+        for i in range(6):      # loop to go thru the diff pngs to bytes and append to arry
+            blob = gridfs.GridFS(db)    # creating blob
+            file = f"./static/{mod}/{mod}_{i}.png" # file name
 
-    query = {"modName": mod, "pics": arry } # query add to db
+            with open(file, 'rb') as f: # opens the file
+                contents = f.read()     # read the file
 
-    x = modules.insert_one(query)   # add to db
+            arry.append({"filename": file, "pics": contents})   # add png info to arry
 
-    data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})   # check if added
+        query = {"modName": mod, "pics": arry } # query add to db
+        arry = []   # reset arry
+
+        x = modules.insert_one(query)   # add to db
+
+        # data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})   # check if added
     # print(data)
-    return deletePng(mod)
+    # return deletePng(mod)
+    return "FINISHED"
 
 #-------------------------------------------------------------------------------
 #
@@ -600,21 +622,21 @@ def seeImgs(option):
             mod = f'module{j+1}'                # specific module looking at atm
 
             pics.update( {mod[-1]:   {
-                                "key-concepts": f'{link}/{mod}/{mod}_test0.png',
-                                "summary": f'{link}/{mod}/{mod}_test1.png',
-                                "principles": f'{link}/{mod}/{mod}_test2.png',
-                                "do-notes": f'{link}/{mod}/{mod}_test3.png',
-                                "quiz": f'{link}/{mod}/{mod}_test4.png',
-                                "faq": f'{link}/{mod}/{mod}_test5.png'}} )
+                                "key-concepts": f'{link}/{mod}/{mod}_0.png',
+                                "summary": f'{link}/{mod}/{mod}_1.png',
+                                "principles": f'{link}/{mod}/{mod}_2.png',
+                                "do-notes": f'{link}/{mod}/{mod}_3.png',
+                                "quiz": f'{link}/{mod}/{mod}_4.png',
+                                "faq": f'{link}/{mod}/{mod}_5.png'}} )
     else:
         print(f"get imgs from module {option}")
         pics.update({mod:   {
-                            "key-concepts": f'{link}/{option}/{option}_test0.png',
-                            "summary": f'{link}/{option}/{option}_test1.png',
-                            "principles": f'{link}/{option}/{option}_test2.png',
-                            "do-notes": f'{link}/{option}/{option}_test3.png',
-                            "quiz": f'{link}/{option}/{option}_test4.png',
-                            "faq": f'{link}/{option}/{option}_test5.png'}})
+                            "key-concepts": f'{link}/{option}/{option}_0.png',
+                            "summary": f'{link}/{option}/{option}_1.png',
+                            "principles": f'{link}/{option}/{option}_2.png',
+                            "do-notes": f'{link}/{option}/{option}_3.png',
+                            "quiz": f'{link}/{option}/{option}_4.png',
+                            "faq": f'{link}/{option}/{option}_5.png'}})
 
     return pics
 
@@ -688,7 +710,7 @@ def deletePng(mod):
     # going to loop through all the diff pngs saved for a specific module
     # and delete them from the static folder
     for i in range(6):
-        file = f'./static/{mod}/{mod}_test{i}.png'
+        file = f'./static/{mod}/{mod}_{i}.png'
         try:
             os.remove(file)
             stat.append(f"deleted {file} successfuly")
