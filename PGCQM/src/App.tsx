@@ -7,48 +7,37 @@ import { AdminView } from './components/AdminView';
 export default function App() {
   const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin'>('student');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  // About text - In production, this would be fetched from database
-  // Admin can update this content through the Admin View
-//   const [aboutText, setAboutText] = useState(
-//     `This site serves two main purposes:
-// For students who have already taken the class, it offers a chance to refresh their memory and explore new perspectives on the material.
-// For those considering the course, it provides a preview—a "trailer," much like a three-minute glimpse that sparks interest before a three-hour movie.
 
-// The aim is to highlight the underlying patterns of the course design. Modules are not assembled at random; each follows a deliberate structure that balances consistency with variation. Every module contains six parts:
-// A pictorial illustrating a key concept
-// A concise text summary of essential notions
-// A set of guiding principles
-// Common pitfalls ("do-nots")
-// A quiz
-// Frequently asked questions raised by students—sometimes surprising even the professor, who wonders, "What are they really asking?"
-
-// Each of these elements plays an important role, and the absence of even one can create a noticeable gap.
-// We invite you to explore the design and rhythm of the course through this site.`
-//   );
-
-// added
+// added/edited
 const [aboutText, setAboutText] = useState([])
 const [abtTextID, setAabtTextID] = useState('')
 
    useEffect(() => {
-    // api call for description
-    getDesc()
+    
+    getDesc() // api call for description
 
   }, [aboutText]);
 
+  /***************************************************************************** 
+  * Desc: gets course description and mongoDB ID for course and sets it to 
+  *       aboutText and abtTextID respectively 
+  * 
+  * params: NONE
+  * 
+  * return NONE 
+  * ***************************************************************************/
   const getDesc = async() => {
     const res = await axios (`http://localhost:5000/getDesc/`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
         .then(res => {
+          // mongoDB saves endline as "\\n" so replaces any "\\n" to "\n" 
           const temp = res.data['desc'].toString().replace(/\\n/gi, '\n');
-          console.log(temp)
-            console.log(res.data)
-            // setTempAboutText1(res.data)
-            setAboutText(temp)
-            setAabtTextID(res.data['_id'].toString())
+          // console.log(temp)
+          // console.log(res.data)
+          setAboutText(temp)
+          setAabtTextID(res.data['_id'].toString())
 
         })
         .catch(err => console.log(err));
@@ -90,7 +79,7 @@ const [abtTextID, setAabtTextID] = useState('')
           onNavigate={navigateToPage} 
           onLogout={handleLogout} 
           aboutText={aboutText}
-          abtTextID={abtTextID}
+          abtTextID={abtTextID} // added description ID for admin edits
           onUpdateAbout={handleUpdateAbout}
         />
       )}

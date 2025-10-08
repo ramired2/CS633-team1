@@ -17,9 +17,12 @@ from spire.presentation.common import *
 from spire.presentation import *
 
 app = Flask(__name__)
-UPLOAD_FOLDER = './static'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
 CORS(app)
+
+UPLOAD_FOLDER = './static'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # where ppt files will be stored temp
+                                            # while ppt --> png happens
+
 
 # loading to read .env info
 load_dotenv()
@@ -257,7 +260,7 @@ def getDescs():
 #-------------------------------------------------------------------------------
 #
 # Description: getting the course description for the homepage given a partial
-#              of the admin who owns it (aka prof)
+#              of the admin who owns it (aka prof alex)
 #
 # params: NONE
 # 
@@ -284,11 +287,9 @@ def getDetails():
 
     return json.dumps(data, default=str)
 
-# insert new description
-# atm adds the adminID (aka alex's) 
 #-------------------------------------------------------------------------------
 #
-# Description: insert a new description and adds 
+# Description: insert a new description and adds alex as admin
 #
 # params: desc --> description of course
 #         adminID -- > id of admin
@@ -323,14 +324,15 @@ def addDesc(desc, adminID):
 # params: id --> _id of the description
 #         desc --> new description
 # 
-# return: data --> edited info in json
+# return: stat --> 200 if query successfully executed
+#                  400 if query not executed
 # 
 #-------------------------------------------------------------------------------
 @app.route("/editDesc", methods=['PUT', 'OPTIONS', 'GET'])
 def editDesc():
-    stat = 200
-    id = request.args.get('id')
-    desc = request.args.get('description')
+    stat = 200                          # status code if query executed or not
+    id = request.args.get('id')         # get id sent as param
+    desc = request.args.get('description') # get description sent as param
     
     db = connect()                      # opens DB connection
     descriptions = db["descriptions"]   # specifically get descriptions table
@@ -342,9 +344,10 @@ def editDesc():
                                             # not the adminID
 
     res = descriptions.update_one(query, edited)  # update the info
-    changed = res.acknowledged                      # if query ran successfuly
+    changed = res.acknowledged                    # if query ran successfuly
+                                                  # acknowledged return true
 
-    if res == False:        # if curr desc not same as desired, err editing
+    if res == False:                    # if false then query was not executed
         stat = 400
     
 
@@ -379,118 +382,6 @@ def deleteDesc(id):
 
     return json.dumps(data, default=str)
 
-################################################################################
-#
-#                           Courses Manipulations
-#
-################################################################################
-
-#-------------------------------------------------------------------------------
-#
-# Description: gets all courses
-#
-# params: NONE
-# 
-# return: data --> list of courses
-# 
-#-------------------------------------------------------------------------------
-@app.route("/getCourses", methods=['GET'])
-def getCourses():
-    db = connect()              # opens DB connection
-    courses = db["courses"]     # specifically get courses table
-
-    data = []                   # make list for the data
-
-    for x in courses.find():    # parse thru info and add ea entry to data
-        data.append(x)
-
-    return json.dumps(data, default=str)
-
-#-------------------------------------------------------------------------------
-#
-# Description: inserts a new course
-#
-# params: name --> full name of the course
-#         code --> course code 'cs633'
-#         numModules --> number of modules in the course
-# 
-# return: data --> the inserted item
-# 
-#-------------------------------------------------------------------------------
-@app.route("/addCourse/<name>/<code>/<numModules>", methods=['POST', 'GET'])
-def addCourse(name, code, numModules):
-    db = connect()              # open db connection
-    courses = db["courses"]     # will get table courses
-
-    # query of info we want to add
-    query = { "courseName": name, "courseCode": code, "numModules": numModules}
-
-    x = courses.insert_one(query) # insert to db
-
-    # get the info of the course just inserted
-    data = db.courses.find_one({ "_id": ObjectId(x.inserted_id)})
-
-    return json.dumps(data, default=str)
-
-#-------------------------------------------------------------------------------
-#
-# Description: edit a specific course
-#
-# params: id --> id of course want edit
-#         name --> name of course
-#         code --> code of course
-#         mods --> number of modules course has
-# 
-# return: data --> info of edited course
-# 
-#-------------------------------------------------------------------------------
-@app.route("/editCourse/<id>/<name>/<code>/<mods>", methods=['GET', 'POST', 'PUT'])
-def editCourse(id, name, code, mods):
-    db = connect()                      # opens DB connection
-    courses = db["courses"]             #specifically get courses table
-
-    id = intToObjID(id)                 # id in ObjectID type
-
-    query = { "_id": id}                # query for specific id
-
-    # new info to set into course
-    edited = { "$set": { "courseName": name, "courseCode": code, "numModules": mods }}
-                                            
-    courses.update_one(query, edited)   # update the info
-
-    data = db.courses.find_one({ "_id": id})    # search for just edited course
-
-    return json.dumps(data, default=str)
-
-#-------------------------------------------------------------------------------
-#
-# Description: delete a specific course given their id
-#
-# params: id --> unique _id of the course
-# 
-# return: data --> if deleted will say "deleted", otherwise returns info for 
-#                   course that was supposed to be deleted
-# 
-#-------------------------------------------------------------------------------
-@app.route("/deleteCourse/<id>", methods=['DELETE', 'GET'])
-def deleteCourse(id):
-    db = connect()              # opens DB connection
-    courses = db["courses"]     #specifically get courses table
-
-    id = intToObjID(id)         # get id in ObjectId type
-
-    query = { "_id": id}        # query for specific id
-
-    courses.delete_one(query)   #deletes it
-
-    data = db.courses.find_one({ "_id": id}) # search for desc with specific
-
-    if data == None:            # if success deleted return None
-        data = "deleted"
-    
-
-    return json.dumps(data, default=str)
-
 
 ################################################################################
 #
@@ -516,18 +407,17 @@ def getMods():
     data = []                   # make list for the data
 
     for x in modules.find().sort("modName"):    # parse thru info and add ea entry to data
-        data.append(x)
+        data.append(x)                          # and sort by module name
 
     return retreiveBytesToPng(modules,data,"all")
 
 #-------------------------------------------------------------------------------
 #
-# Description: gets all the modules
+# Description: gets all the module names and IDs for dropdown
 #
 # params: NONE
 # 
-# return: retreiveBytesToPng() --> gets bytes of images from the db and converts
-#                                  to png and saves to static folder
+# return: data --> list of mod names and ids
 # 
 #-------------------------------------------------------------------------------
 @app.route("/getModNameID", methods=['GET'])
@@ -537,8 +427,8 @@ def getModNameID():
 
     data = []                   # make list for the data
 
-    for x in modules.find({}, {"pics":0}).sort("modName"):   # parse thru info and add ea entry to data
-        data.append(x)
+    for x in modules.find({}, {"pics":0}).sort("modName"):   # get id and modName only, "pics" key
+        data.append(x)                                       # and sort by module name
 
     return json.dumps(data, default=str)
 
@@ -565,17 +455,16 @@ def getMod(mod):
 
     return retreiveBytesToPng(modules,data,mod)
 
-# will get the byte imgs and make them into pngs to then send to frontend
 #-------------------------------------------------------------------------------
 #
 # Description: depending on option, will either get all of the PNGs in db, or
 #              only from specific module and save them to static in their specific
 #              module folders
 #
-# params: modules -->
-#         data -->
-#         option --> "all" gets all pngs in db
-#                    any other value will be module name, so get PNGs for that
+# params: modules --> db collection
+#         data    --> list of modules
+#         option  --> "all" gets all pngs in db
+#                      any other value will be module name, so get PNGs for that
 # 
 # return: "saved imgs to static"
 # 
@@ -610,8 +499,6 @@ def retreiveBytesToPng(modules, data, option="all"):
         
     return seeImgs('all')
 
-# uploading file and saving to static in specified module file
-#  return a definition that will add the pngs to the db "modules"
 #-------------------------------------------------------------------------------
 #
 # Description: uploaded file will turn the ppt into PNGs and save to /static/module#
@@ -628,26 +515,23 @@ def upload(mod):
     if not request.files:           # checks if the file was received
         return str({'message': 'empty'}), 200
 
-    file = request.files['file']
+    file = request.files['file']    # indiv file being sent
 
     # save ppt to static
-    print(file)
-    filename = secure_filename(file.filename)
-    print(filename)
-    file.save(os.path.join("./static", filename))
-
+    # print(file)
+    filename = secure_filename(file.filename)       # get file name
+    # print(filename)
+    file.save(os.path.join("./static", filename))   # save file to static folder
 
     img = []                        # list to save imgs
 
     presentation = Presentation()   # instance of ppt
 
-    # In deployment will read the ppt from uploaded file from frontend in 
-    # FormData, but for now testing file is in static
+    # load ppt
     presentation.LoadFromFile(f'./static/{filename}')
-    # presentation.LoadFromFile("./static/module1_test.pptx")
 
     for i, slide in enumerate(presentation.Slides):         # loop thru # slides
-        fileName =f"./static/{mod}/{mod}_test{str(i)}.png" # folder location + name
+        fileName =f"./static/{mod}/{mod}_test{str(i)}.png"  # folder location + name
        
         image = slide.SaveAsImage() # turn to png
         img.append(image)           # append to list of images
@@ -657,14 +541,12 @@ def upload(mod):
 
     presentation.Dispose()          # get rid of ppt instance
 
-    # print(img)
-
     return addMod(mod)
 
 #-------------------------------------------------------------------------------
 #
 # Description: modules uploaded will always have seven PNGs and six modules.
-#              Will parse thru the PNGs convert them to binary them add the info
+#              Will parse thru the PNGs convert them to binary then add the info
 #              to the db.
 #
 # params: mod --> name of the module
@@ -697,47 +579,20 @@ def addMod(mod):
 
 #-------------------------------------------------------------------------------
 #
-# Description: will output the pngs of a specific module
-#
-# params: mod --> the name of the module
-# 
-# return: html of the pics to be output
-# 
-#-------------------------------------------------------------------------------
-@app.route("/seeImg/<mod>", methods=['POST', 'GET'])
-def seeImg(mod):
-    # string of html to render the pics of  a module
-    pics = {mod[-1]:   {
-                    "key-concepts": f'http://localhost:5000/static/{mod}/{mod}_test0.png',
-                    "summary": f'http://localhost:5000/static/{mod}/{mod}_test1.png',
-                    "principles": f'http://localhost:5000/static/{mod}/{mod}_test2.png',
-                    "do-notes": f'http://localhost:5000/static/{mod}/{mod}_test3.png',
-                    "quiz": f'http://localhost:5000/static/{mod}/{mod}_test4.png',
-                    "faq": f'http://localhost:5000/static/{mod}/{mod}_test5.png'}}
-
-    # pics = f"<img src='/static/{mod}/{mod}_test0.png'> \
-    #         <img src='/static/{mod}/{mod}_test1.png'> \
-    #         <img src='/static/{mod}/{mod}_test2.png'> \
-    #         <img src='/static/{mod}/{mod}_test3.png'> \
-    #         <img src='/static/{mod}/{mod}_test4.png'> \
-    #         <img src='/static/{mod}/{mod}_test5.png'>"
-
-    return pics
-
-#-------------------------------------------------------------------------------
-#
-# Description: will output the all the pngs from the modules in the DB
+# Description: will get all the slide imgs from static and send as dict
 #
 # params: NONE
 # 
-# return: html of the pics to be output
+# return: dictionary of slide links
 # 
 #-------------------------------------------------------------------------------
 @app.route("/seeImgs/<option>", methods=['POST', 'GET', 'PUT'])
 def seeImgs(option):
     db = connect()                          # opens DB connection
     modules = db["modules"]                 # specifically get modules table
-    pics = {}
+    pics = {}                               # dict of module slides
+
+    link = "http://localhost:5000/static"   # host link
 
     if(str(option) == 'all'):
         print("get all imgs")
@@ -745,103 +600,23 @@ def seeImgs(option):
             mod = f'module{j+1}'                # specific module looking at atm
 
             pics.update( {mod[-1]:   {
-                                "key-concepts": f'http://localhost:5000/static/{mod}/{mod}_test0.png',
-                                "summary": f'http://localhost:5000/static/{mod}/{mod}_test1.png',
-                                "principles": f'http://localhost:5000/static/{mod}/{mod}_test2.png',
-                                "do-notes": f'http://localhost:5000/static/{mod}/{mod}_test3.png',
-                                "quiz": f'http://localhost:5000/static/{mod}/{mod}_test4.png',
-                                "faq": f'http://localhost:5000/static/{mod}/{mod}_test5.png'}} )
+                                "key-concepts": f'{link}/{mod}/{mod}_test0.png',
+                                "summary": f'{link}/{mod}/{mod}_test1.png',
+                                "principles": f'{link}/{mod}/{mod}_test2.png',
+                                "do-notes": f'{link}/{mod}/{mod}_test3.png',
+                                "quiz": f'{link}/{mod}/{mod}_test4.png',
+                                "faq": f'{link}/{mod}/{mod}_test5.png'}} )
     else:
         print(f"get imgs from module {option}")
         pics.update({mod:   {
-                            "key-concepts": f'http://localhost:5000/static/{option}/{option}_test0.png',
-                            "summary": f'http://localhost:5000/static/{option}/{option}_test1.png',
-                            "principles": f'http://localhost:5000/static/{option}/{option}_test2.png',
-                            "do-notes": f'http://localhost:5000/static/{option}/{option}_test3.png',
-                            "quiz": f'http://localhost:5000/static/{option}/{option}_test4.png',
-                            "faq": f'http://localhost:5000/static/{option}/{option}_test5.png'}})
+                            "key-concepts": f'{link}/{option}/{option}_test0.png',
+                            "summary": f'{link}/{option}/{option}_test1.png',
+                            "principles": f'{link}/{option}/{option}_test2.png',
+                            "do-notes": f'{link}/{option}/{option}_test3.png',
+                            "quiz": f'{link}/{option}/{option}_test4.png',
+                            "faq": f'{link}/{option}/{option}_test5.png'}})
 
     return pics
-
-#-------------------------------------------------------------------------------
-#
-# Description: will edit a module. 
-#              If module name is changed then need to update the names of 
-#               the PNGs as they contain the moduleName. 
-#              If want to change a single slide will upload, read binary, and edit
-#               that single PNGs binary.
-#              If want to edit more than one, potentially insert the whole ppt 
-#
-# params: id --> id of module want edit
-#         mod --> name of module
-# 
-# return: data --> the edited module in json
-# 
-#-------------------------------------------------------------------------------
-@app.route("/editMod/<id>/<mod>", methods=['GET', 'POST', 'PUT', 'OPTIONS'])
-def editMod(id, mod):
-    # when deployed will use FromData to get info from frontend
-
-    db = connect()              # opens DB connection
-    modules = db["modules"]     #specifically get modules table
-
-    id = intToObjID(id)         # turn id to ObjectId
-
-    query = { "_id": id}        # query for the specific db item you want
-
-    og = db.modules.find_one({ "_id": id})  # if changing module name, need og
-                                            # name for when update PNG names
-    
-    edited = { "$set": { "modName": mod}}   # query to change the module name
-    modules.update_one(query, edited)       # update the info
-
-    # if want to edit one of the module imgs need to replace all or user has to
-        # if doing all
-            # for loop to go thru the diff pngs to bytes and append to arry
-            # arry = []
-            # for i in range(6):
-            #     blob = gridfs.GridFS(db)
-            #     file = f"{mod}_test{i}.png"
-
-            #     with open(file, 'rb') as f:
-            #         contents = f.read()
-
-            #     arry.append({"filename": file, "pics": contents})
-
-            # query = {"$set": { "pics": arry }}
-            # 
-        # edit one by one.
-            # query worked in MongoDB Compass
-            # query2 = [{'$addFields': {'pics': {'$map': {'input': '$pics', 'as': 'picsA','in': {'$mergeObjects': ['$$picsA', { 'pics': { '$replaceOne': { 'input': '$$picsA.filename', 'find': 'module4_test2.png', 'replacement': 'NEW_BINARY_IMG'}}}]}}}}}]
-            # modules.update_many(query, query2)
-
-    # if changing module name, need to change mod name of all pics!
-    db = connect()                          # opens DB connection
-    modules = db["modules"]                 # specifically get modules table
-
-    # query that will parse thru all filenames that contain Module{old mod number}
-    # and update it to the new module name
-    query3 = [{'$addFields': {'pics': {'$map': {'input': '$pics', 'as': 'picsA','in': {'$mergeObjects': ['$$picsA', { 'filename': { '$replaceOne': { 'input': '$$picsA.filename', 'find': og["modName"], 'replacement': mod}}}]}}}}}]
-
-    # [{ '$addFields':                                                          # add/edit new field document
-    #       { 'pics':                                                           # {_id: ..., modName: ..., pics}
-    #           { '$map':                                                       # want to map because pics is an array
-    #               { 'input': '$pics',                                         # map the pics
-    #                 'as': 'picsA',                                            # use picsA as a variable for content of pics
-    #                  'in': { '$mergeObjects':                                 # merge objs so all objs in one line
-    #                          [ '$$picsA',                                     # reference the list as the thing to mergeObjects
-    #                               { 'filename':                               # {_id: ..., modName: ..., pics[{filename:..., pics:...}, {filename:..., pics:...}, ..., {filename:..., pics:...}]}
-    #                               { '$replaceOne':                            # setting up to replace a substring of the module{old}
-    #                                   { 'input': '$$picsA.filename',          # looking at the filename field
-    #                                     'find': og["modName"],                # look for any instance of the old module name
-    #                                     'replacement': mod                    # update it w the new module name
-    # }}}]}}}}}]
-
-    modules.update_many(query, query3)       # make the update
-
-    data = db.modules.find_one({ "_id": id}) # search for mod that was edited
-
-    return json.dumps(data, default=str)
 
 #-------------------------------------------------------------------------------
 #

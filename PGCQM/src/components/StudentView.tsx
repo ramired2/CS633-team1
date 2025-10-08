@@ -14,75 +14,6 @@ interface StudentViewProps {
   aboutText?: string;
 }
 
-// Comprehensive image database: 6 modules × 6 content types = 36 unique images
-// const moduleImages = {
-//   // Module 1: Software Quality Fundamentals
-//   "1": {
-//     "key-concepts": "https://images.unsplash.com/photo-1621361753831-e972c09ceec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHF1YWxpdHklMjBjb25jZXB0c3xlbnwxfHx8fDE3NTkxMTM1Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1743385779347-1549dabf1320?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZXN0aW5nJTIwc3VtbWFyeSUyMGRpYWdyYW18ZW58MXx8fHwxNzU5MTEzNTM5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1722080826167-4ea87368cbc5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHByaW5jaXBsZXMlMjBmcmFtZXdvcmt8ZW58MXx8fHwxNzU5MTEzNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1758874384555-37d50c0ee81a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXZlbG9wbWVudCUyMG5vdGVzJTIwZG9jdW1lbnRhdGlvbnxlbnwxfHx8fDE3NTkxMTM1NDV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1556374149-b05b813beef0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHF1aXolMjBhc3Nlc3NtZW50fGVufDF8fHx8MTc1OTExMzU0OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmVxdWVudGx5JTIwYXNrZWQlMjBxdWVzdGlvbnMlMjBzb2Z0d2FyZXxlbnwxfHx8fDE3NTkxNDk2NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   },
-//   // Module 2: Quality Assurance Process
-//   "2": {
-//     "key-concepts": "https://images.unsplash.com/photo-1758873263563-5ba4aa330799?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWFsaXR5JTIwYXNzdXJhbmNlJTIwcHJvY2Vzc3xlbnwxfHx8fDE3NTkxMTM1NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1669441797953-7acda19ee9a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHRlc3RpbmclMjBsaWZlY3ljbGV8ZW58MXx8fHwxNzU5MTEzNTU1fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1704209684373-4f9ec6f3c5a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2ZXJpZmljYXRpb24lMjB2YWxpZGF0aW9uJTIwbWV0aG9kc3xlbnwxfHx8fDE3NTkxMTM1NTh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZXN0JTIwZGVzaWduJTIwY292ZXJhZ2V8ZW58MXx8fHwxNzU5MTEzNTYxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1740908900906-a51032597559?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZWN1cml0eSUyMHByYWN0aWNlcyUyMGZyYW1ld29ya3xlbnwxfHx8fDE3NTkxMTM1NjV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1688126507367-b7cb61e19f30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxoZWxwJTIwY2VudGVyJTIwY3VzdG9tZXIlMjBzdXBwb3J0fGVufDF8fHx8MTc1OTE0OTY2OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   },
-//   // Module 3: Testing Methodologies
-//   "3": {
-//     "key-concepts": "https://images.unsplash.com/photo-1686061594183-8c864f508b00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkeW5hbWljJTIwYW5hbHlzaXMlMjB0b29sc3xlbnwxfHx8fDE3NTkxMTM1Njh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1564865878688-9a244444042a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2RlJTIwcmV2aWV3JTIwcHJvY2Vzc3xlbnwxfHx8fDE3NTkxMTM1NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1630442923896-244dd3717b35?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZWJ1Z2dpbmclMjB0ZWNobmlxdWVzfGVufDF8fHx8MTc1OTExMzU3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXJmb3JtYW5jZSUyMHRlc3RpbmclMjBtZXRyaWNzfGVufDF8fHx8MTc1OTExMzU3OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhdXRvbWF0ZWQlMjB0ZXN0aW5nJTIwd29ya2Zsb3d8ZW58MXx8fHwxNzU5MTEzNTgxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1738707636811-195106749217?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWVzdGlvbnMlMjBhbnN3ZXJzJTIwdHJvdWJsZXNob290aW5nfGVufDF8fHx8MTc1OTE0OTY3NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   },
-//   // Module 4: Test Design & Coverage
-//   "4": {
-//     "key-concepts": "https://images.unsplash.com/photo-1641891847722-7ca2a0df0879?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbnRlZ3JhdGlvbiUyMHRlc3RpbmclMjBzdHJhdGVneXxlbnwxfHx8fDE3NTkxMTM1ODR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml0JTIwdGVzdGluZyUyMGZyYW1ld29ya3xlbnwxfHx8fDE3NTkxMTM1ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1526907647581-931d6e8518e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxxdWFsaXR5JTIwY29udHJvbCUyMHN0YW5kYXJkc3xlbnwxfHx8fDE3NTkxMTM1OTF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1693045181254-08462917f681?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMGRvY3VtZW50YXRpb24lMjBndWlkZXxlbnwxfHx8fDE3NTkxMTM1OTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1625465329894-9cfaf8a63332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZXN0JTIwY2FzZSUyMGRlc2lnbnxlbnwxfHx8fDE3NTkxMTM1OTh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1693045181254-08462917f681?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXBwb3J0JTIwZG9jdW1lbnRhdGlvbiUyMGd1aWRlfGVufDF8fHx8MTc1OTE0OTY4M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   },
-//   // Module 5: Security Practices
-//   "5": {
-//     "key-concepts": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMG1ldHJpY3MlMjBhbmFseXNpc3xlbnwxfHx8fDE3NTkxMTM2MDF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1685839061205-a3ea35b7b804?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXZlbG9wbWVudCUyMGxpZmVjeWNsZSUyMGRpYWdyYW18ZW58MXx8fHwxNzU5MTEzNjA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzeXN0ZW0lMjB0ZXN0aW5nJTIwYXBwcm9hY2h8ZW58MXx8fHwxNzU5MTEzNjA3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhY2NlcHRhbmNlJTIwdGVzdGluZyUyMGNyaXRlcmlhfGVufDF8fHx8MTc1OTExMzYxMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZWdyZXNzaW9uJTIwdGVzdGluZyUyMHByb2Nlc3N8ZW58MXx8fHwxNzU5MTEzNjE0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1724632824319-4b43e74e000c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrbm93bGVkZ2UlMjBiYXNlJTIwaGVscCUyMGNlbnRlcnxlbnwxfHx8fDE3NTkxNDk2ODl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   },
-//   // Module 6: Advanced Quality Management
-//   "6": {
-//     "key-concepts": "https://images.unsplash.com/photo-1554350747-ec45fd24f51b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwYWNjZXB0YW5jZSUyMHRlc3Rpbmd8ZW58MXx8fHwxNzU5MTEzNjE3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "summary": "https://images.unsplash.com/photo-1591381287254-b3349c60bf9b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZXN0JTIwZXhlY3V0aW9uJTIwd29ya2Zsb3d8ZW58MXx8fHwxNzU5MTEzNjIwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "principles": "https://images.unsplash.com/photo-1620784889144-68359280d20e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZWZlY3QlMjB0cmFja2luZyUyMHN5c3RlbXxlbnwxfHx8fDE3NTkxMTM2MjN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "do-notes": "https://images.unsplash.com/photo-1591492835122-79ae33cd19f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyaXNrJTIwYXNzZXNzbWVudCUyMGZyYW1ld29ya3xlbnwxfHx8fDE3NTkxMTM2MjZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "quiz": "https://images.unsplash.com/photo-1758691736545-5c33b6255dca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVzZW50YXRpb24lMjBzbGlkZSUyMHF1YWxpdHklMjBtYW5hZ2VtZW50fGVufDF8fHx8MTc1OTEwMDQ2Mnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-//     "faq": "https://images.unsplash.com/photo-1669023414171-56f0740e34cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobmljYWwlMjBzdXBwb3J0JTIwZ3VpZGVsaW5lc3xlbnwxfHx8fDE3NTkxNDk2OTN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-//   }
-// };
-
-// setModuleImages({"1": {
-//                               "key-concepts": link + res.data[0],
-//                               "summary": link + res.data[1],
-//                               "principles": link + res.data[2],
-//                               "do-notes": link + res.data[3],
-//                               "quiz": link + res.data[4],
-//                               "faq": link + res.data[5]
-//                             }})
-
-// const [moduleImages, setModuleImages] = useState({});
-
 export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   const [selectedModule, setSelectedModule] = useState("1");
   const [selectedContent, setSelectedContent] = useState('key-concepts');
@@ -98,7 +29,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
     { id: 'faq', label: 'FAQ', icon: MessageCircle }
   ];
 
-  // added
+  // added/ edited
   const [moduleImages, setModuleImages] = useState({// Module 1: Software Quality Fundamentals
   "1": {
     "key-concepts": "https://images.unsplash.com/photo-1621361753831-e972c09ceec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHF1YWxpdHklMjBjb25jZXB0c3xlbnwxfHx8fDE3NTkxMTM1Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
@@ -154,43 +85,46 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
     "faq": "https://images.unsplash.com/photo-1669023414171-56f0740e34cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZWNobmljYWwlMjBzdXBwb3J0JTIwZ3VpZGVsaW5lc3xlbnwxfHx8fDE3NTkxNDk2OTN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
   }});
   const [isEmpty, setIsEmpty] = useState(true);
-  //
 
-
-
-  // ADDED 
-  // api for getting the images
-  const [tempAboutText1, setTempAboutText1] = useState([])
    useEffect(() => {
-    // api call for description
-    getMods()
+    getMods()   // api call for getting module imgs
 
   }, []);
+
+  /*****************************************************************************
+  * Desc: function to get info for desired slide to view
+  * 
+  * params: NONE
+  * 
+  * return: if moduleImgaes empty --> return link to image
+  *         else return link of specific tab user clicked from desired module
+  *****************************************************************************/
   const getCurrentImage = () => {
-    if (moduleImages == null || moduleImages == undefined) { // empty
-      console.log("UNDEFINED")
+    // if module imgs did not load for some reason
+    if (moduleImages == null || moduleImages == undefined) {
       return "https://images.unsplash.com/photo-1621361753831-e972c09ceec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHF1YWxpdHklMjBjb25jZXB0c3xlbnwxfHx8fDE3NTkxMTM1Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     }
     else {
+      // user clicked on module 'selectedModule' and wants to see tab 'selected content'
       return moduleImages[selectedModule]?.[selectedContent]
     }
-
-    // console.log(moduleImages[selectedModule]?.[selectedContent])
-    // console.log(moduleImages["1"]["key-concepts"])
-    // return moduleImages[selectedModule]?.[selectedContent] || moduleImages["1"]["key-concepts"];
-    
   };
 
+  
+  /***************************************************************************** 
+  * Desc: function to get the images for all modules
+  * 
+  * params: NONE
+  * 
+  * return NONE 
+  * ***************************************************************************/
   const getMods = async() => {
-    // let temp = "module1"
-    // const link = `http://localhost:5000/seeImg/${temp}`
     const res = await axios (`http://localhost:5000/getMods`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
         .then(res => {
-            console.log(res.data)
-            const link = "http://localhost:5000/static/"
+            // console.log(res.data)
 
             setModuleImages(res.data)
             setIsEmpty(false)

@@ -14,13 +14,21 @@ export function AboutSection({ aboutText }: AboutSectionProps) {
 
   // ADDED
   const [tempAboutText1, setTempAboutText1] = useState([])
+
    useEffect(() => {
-    // api call for description
-    getDesc()
+    getDesc() // api call for description
     console.log("abtSection")
 
   }, [tempAboutText1]);
 
+  /***************************************************************************** 
+  * Desc: gets the course description from DB and sets it to tempAboutText1 and
+  *       aboutText
+  * 
+  * params: NONE
+  * 
+  * return NONE 
+  * ***************************************************************************/
   const getDesc = async() => {
     const res = await axios (`http://localhost:5000/getDesc/`, {
         headers: { 'Content-Type': 'application/json'},
@@ -30,7 +38,6 @@ export function AboutSection({ aboutText }: AboutSectionProps) {
           const temp = res.data['desc'].toString().replace(/\\n/gi, '\n');
           console.log(temp)
             console.log(res.data)
-            // setTempAboutText1(res.data)
             setTempAboutText1(temp)
             aboutText = res.data
 
