@@ -45,7 +45,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const [tempAboutText, setTempAboutText] = useState(aboutText);
 
   // added
-  const formData = new FormData();
+  // const formData = new FormData();
   const [modIds, setModIds] = useState([])
   let [totFiles, setTotFiles] = useState<File[]>();
   const [stat, setStat] = useState(0)
@@ -147,6 +147,9 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       }
 
       setLoading(false)
+
+      // reset prev data
+
     })
     .catch(err => console.log(err));
   }
@@ -161,9 +164,9 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     }
 
     // ADDED api call to send to flask
+    const formData = new FormData();
     totFiles?.forEach((indivFile) => formData.append('file', indivFile))
-    
-    // formData.append('file', totFiles![0]);
+  
     console.log(totFiles)
     console.log(formData)
 
@@ -174,10 +177,18 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     // /upload/<mod>
     addMod(formData);
 
-    // setTotFiles([]) // clear out files to b submitted
+    setTotFiles([]) // clear out files to b submitted
+    setModules([
+    { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
+    { id: 2, title: 'Module 2', file: null, fileName: 'File Location' },
+    { id: 3, title: 'Module 3', file: null, fileName: 'File Location' },
+    { id: 4, title: 'Module 4', file: null, fileName: 'File Location' },
+    { id: 5, title: 'Module 5', file: null, fileName: 'File Location' },
+    { id: 6, title: 'Module 6', file: null, fileName: 'File Location' },
+  ])
     // have to renew rest of data
     
-    alert('Files submitted successfully!');
+    // alert('Files submitted successfully!');
   };
 
   const handleDelete = () => {
@@ -259,7 +270,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         {/* Upload Table */}
         <Card className="p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">Module File Management</h3>
-          {loading == true? <p>Uploading file(s). Please wait before refreshing or leaving page.</p>:""}
+          {loading == true? <h6>Uploading file(s). Please wait before refreshing or leaving page.</h6>:""}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
