@@ -41,6 +41,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   
   const [deleteModule, setDeleteModule] = useState<string>('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tempAboutText, setTempAboutText] = useState(aboutText);
 
   // added
@@ -78,6 +79,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         .then(res => {
             console.log(`deleting ${deleteModule}`)
             console.log(res.data)
+            setModIds(res.data)
         })
         .catch(err => console.log(err));
   };
@@ -143,6 +145,8 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       if(result.data.includes('empty')) {
         alert('Error loading file. Try again later.')
       }
+
+      setLoading(false)
     })
     .catch(err => console.log(err));
   }
@@ -164,7 +168,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     console.log(formData)
 
     // formData.forEach((value, key) => console.log(key, value))
-    
+    setLoading(true)
 
     // api call
     // /upload/<mod>
@@ -173,7 +177,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     // setTotFiles([]) // clear out files to b submitted
     // have to renew rest of data
     
-    // alert('Files submitted successfully!');
+    alert('Files submitted successfully!');
   };
 
   const handleDelete = () => {
@@ -255,6 +259,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         {/* Upload Table */}
         <Card className="p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">Module File Management</h3>
+          {loading == true? <p>Uploading file(s). Please wait before refreshing or leaving page.</p>:""}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>

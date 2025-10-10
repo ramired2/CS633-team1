@@ -283,7 +283,7 @@ def getDetails():
     query = { "adminID": id}               # want to find desc that attached to the admin id
     data = db.descriptions.find_one(query) # search for desc w prof _id
 
-    print(data)
+    # print(data)
 
     return json.dumps(data, default=str)
 
@@ -518,15 +518,13 @@ def upload():
     
     files = request.files.getlist('file')
 
-    # print(type(files))
     for file in files:
-        # file = request.files['file']    # indiv file being sent
-
+        print(f'file og name: {file.filename}')
         # save ppt to static
         print(file)
         filename = secure_filename(file.filename[:7])       # get file name -- all files start with module#
-        # filenameExtension = secure_filename(file.filename[6:])
-        if('pptx' in file.filename):
+
+        if('pptx' in file.filename):                        # get extension pptx OR ppt
             filenameExtension = '.pptx'
         
         else:
@@ -538,12 +536,12 @@ def upload():
 
         presentation = Presentation()   # instance of ppt
 
-        print(f'FILE SHOULD BE IN./static/{filename}{filenameExtension}')
+        print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
 
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
 
-        for i, slide in enumerate(presentation.Slides):         # loop thru # slides
+        for i, slide in enumerate(presentation.Slides):               # loop thru # slides
             fileName =f"./static/{filename}/{filename}_{str(i)}.png"  # folder location + name
         
             image = slide.SaveAsImage() # turn to png
@@ -553,11 +551,8 @@ def upload():
             image.Dispose()             # get rid of instance
 
         presentation.Dispose()          # get rid of ppt instance
-    
-    # numAdd = len(files)
 
     return addMod(files)
-    # return "hi"
 
 #-------------------------------------------------------------------------------
 #
@@ -579,6 +574,7 @@ def addMod(files):
 
     for file in files:      # loop thru modules
         mod = f'{file.filename[:7]}'                # specific module looking at atm
+        print(f"adding pngs for {mod}")
 
         for i in range(6):      # loop to go thru the diff pngs to bytes and append to arry
             blob = gridfs.GridFS(db)    # creating blob
@@ -590,14 +586,29 @@ def addMod(files):
             arry.append({"filename": file, "pics": contents})   # add png info to arry
 
         query = {"modName": mod, "pics": arry } # query add to db
+
+        # check if already exist in db (editing) or new (add)
+        data = db.modules.find_one({ "modName": mod})
+        if (data != None):  # would need to be edited
+            print("existed in db")
+            print(data['modName'])
+            query = { "_id": data['_id']}           # query for specific ID
+            edited = { "$set": { "pics": arry } }   # will only change slide pics 
+
+            res = modules.update_one(query, edited)  # update the info
+
+            if res.acknowledged == False:                    # if false then query was not executed
+                return f'{400}'
+
+        else:               # need be added
+            print("adding whole new mod")
+            x = modules.insert_one(query)   # add to db
+
         arry = []   # reset arry
 
-        x = modules.insert_one(query)   # add to db
-
         # data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})   # check if added
-    # print(data)
     # return deletePng(mod)
-    return "FINISHED"
+    return f'{'finished'}'
 
 #-------------------------------------------------------------------------------
 #
@@ -665,11 +676,11 @@ def deleteMod(id):
 
     # delete images from static
 
-    if data == None:                           # if none then deleted success
-        data = "deleted"
+    if data != None:                           # if none then deleted success
+        return "Error deleting."
     
 
-    return json.dumps(data, default=str)
+    return getModNameID()
 
 
 ################################################################################
