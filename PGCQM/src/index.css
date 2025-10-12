@@ -2138,3 +2138,23 @@ html {
 .descriptionTextNewline {
   white-space: pre-line;
 }
+
+.passwordForget:hover {
+  cursor: pointer;
+}
+
+.underlign {
+  text-decoration:underline;
+}
+
+.space {
+  margin: 5px
+}
+
+.forgotText {
+  margin-bottom: 10px;
+}
+
+.err {
+  color: #a00;
+}

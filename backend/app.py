@@ -276,14 +276,11 @@ def getDetails():
 
     admin = getPartialAdmin()   # looks for admin info with name containing "alex"
     admin = json.loads(admin)   # turn into json
-    # print(admin["_id"])         # checks the id
 
     id = intToObjID(admin["_id"])   # turn adminID to ObjectId
 
     query = { "adminID": id}               # want to find desc that attached to the admin id
     data = db.descriptions.find_one(query) # search for desc w prof _id
-
-    # print(data)
 
     return json.dumps(data, default=str)
 
@@ -306,8 +303,6 @@ def addDesc(desc, adminID):
     id = intToObjID(admin["_id"])   # turn adminID to ObjectId
 
     query = { "desc": desc, "adminID": id} # query to add description
-
-    # print("trying to add ", query)
 
     descriptions = db["descriptions"] # will get table Descriptions
     x = descriptions.insert_one(query)# insert new description 
@@ -449,7 +444,6 @@ def getMod(mod):
 
     data = []                         # make list for the data
 
-    
     query = { "modName": mod}         # query when getting a specific module
     data = db.modules.find_one(query) # search specific module name
 
@@ -519,9 +513,8 @@ def upload():
     files = request.files.getlist('file')
 
     for file in files:
-        print(f'file og name: {file.filename}')
-        # save ppt to static
-        print(file)
+        # print(f'file og name: {file.filename}')
+
         filename = secure_filename(file.filename[:7])       # get file name -- all files start with module#
 
         if('pptx' in file.filename):                        # get extension pptx OR ppt
@@ -530,13 +523,15 @@ def upload():
         else:
             filenameExtension = '.ppt'
         
-        file.save(os.path.join("./static", f'{filename}_temp{filenameExtension}').replace("\\","/") )  # save file to static folder
+        #  any file will be named "module<#>_temp.ppt/x"
+        # save file to static folder
+        file.save(os.path.join("./static", f'{filename}_temp{filenameExtension}').replace("\\","/") )  
 
         img = []                        # list to save imgs
 
         presentation = Presentation()   # instance of ppt
 
-        print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
+        # print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
 
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
@@ -562,7 +557,8 @@ def upload():
 #
 # params: mod --> name of the module
 # 
-# return: deletePng() --> def that will delete the pngs from static
+# return: 400 --> if mod exist and update not executed
+#         "finished" --> otherwise
 # 
 #-------------------------------------------------------------------------------
 @app.route("/addMod/<mod>", methods=['POST', 'GET', 'OPTIONS'])
@@ -589,25 +585,22 @@ def addMod(files):
 
         # check if already exist in db (editing) or new (add)
         data = db.modules.find_one({ "modName": mod})
-        if (data != None):  # would need to be edited
-            print("existed in db")
-            print(data['modName'])
+        if (data != None):                          # would need to be edited
+            # print(data['modName'])
             query = { "_id": data['_id']}           # query for specific ID
             edited = { "$set": { "pics": arry } }   # will only change slide pics 
 
-            res = modules.update_one(query, edited)  # update the info
+            res = modules.update_one(query, edited) # update the info
 
-            if res.acknowledged == False:                    # if false then query was not executed
+            if res.acknowledged == False:            # false? then query was not executed
                 return f'{400}'
 
-        else:               # need be added
+        else:                                       # need be added
             print("adding whole new mod")
-            x = modules.insert_one(query)   # add to db
+            x = modules.insert_one(query)           # add to db
 
-        arry = []   # reset arry
-
-        # data = db.modules.find_one({ "_id": ObjectId(x.inserted_id)})   # check if added
-    # return deletePng(mod)
+        arry = []                                   # reset arry for next file
+        
     return f'{'finished'}'
 
 #-------------------------------------------------------------------------------
@@ -673,8 +666,6 @@ def deleteMod(id):
     modules.delete_one(query)                  # deletes it
 
     data = db.modules.find_one({ "_id": id})   # check if id found after deleted
-
-    # delete images from static
 
     if data != None:                           # if none then deleted success
         return "Error deleting."
