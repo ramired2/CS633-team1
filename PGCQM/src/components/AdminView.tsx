@@ -45,16 +45,26 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const [tempAboutText, setTempAboutText] = useState(aboutText);
 
   // added
-  // const formData = new FormData();
   const [modIds, setModIds] = useState([])
+  const [totMods, setTotMods] = useState([1,2,3,4,5,6])
+  const [missingIds, setMissingIds] = useState<Number[]>()
   let [totFiles, setTotFiles] = useState<File[]>();
   const [stat, setStat] = useState(0)
 
      useEffect(() => {
       // api call for description
       getIds()
-  
-    }, []);
+    }, [deleteModule, ]);
+
+    const checkAll = (info) => {
+      const have = info.map((num) => (Number(num['modName'].substr(-1))))
+      console.log(have)
+
+      setMissingIds(totMods.filter(id => !have.includes(id)))
+      console.log(missingIds)
+      console.log(missingIds?.length)
+
+    }
 
     const getIds = async() => {
     // let temp = "module1"
@@ -66,6 +76,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             console.log(res.data)
 
             setModIds(res.data)
+            checkAll(res.data);
 
         })
         .catch(err => console.log(err));
@@ -124,8 +135,6 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         : module
     ));
 
-    // setTotFiles([file])
-
     setTotFiles([...totFiles??[], file])
     console.log(totFiles)
     
@@ -147,6 +156,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       }
 
       setLoading(false)
+      getIds();
 
       // reset prev data
 
@@ -185,7 +195,9 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     { id: 4, title: 'Module 4', file: null, fileName: 'File Location' },
     { id: 5, title: 'Module 5', file: null, fileName: 'File Location' },
     { id: 6, title: 'Module 6', file: null, fileName: 'File Location' },
-  ])
+    ])
+
+    
     // have to renew rest of data
     
     // alert('Files submitted successfully!');
@@ -206,7 +218,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     deletingMod()
     setDeleteModule('');
     setShowDeleteConfirm(false);
-    alert(`Module ${moduleNum} file deleted successfully!`);
+    // alert(`Module ${tempDelete} file deleted successfully!`);
   };
 
   const handleUpdateAbout = () => {
@@ -271,6 +283,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         <Card className="p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">Module File Management</h3>
           {loading == true? <h6>Uploading file(s). Please wait before refreshing or leaving page.</h6>:""}
+          {(missingIds?.length > 0 && missingIds?.length != undefined) || (missingIds?.length > 0)? <h4 className='err'>Missing deck for module(s): {missingIds.toString()}</h4>:""}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
