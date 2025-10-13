@@ -10,6 +10,7 @@ interface HeaderProps {
 }
 
 export function Header({ onNavigate, currentPage, showLogout, onLogout }: HeaderProps) {
+  const host = "http://localhost:3000/"
   return (
     <header className="bg-white shadow-lg border-b-2 border-[#E6E6E7]">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -27,7 +28,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
           </div>
           <div className="flex gap-3 items-center">
             <Button 
-              onClick={() => onNavigate('student')}
+              onClick={() => {onNavigate('student'); console.log("clicked stud"); window.location.href = host;}}
               variant={currentPage === 'student' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
                 currentPage === 'student' 
@@ -39,7 +40,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               Student View
             </Button>
             <Button 
-              onClick={() => onNavigate('admin')}
+              onClick={() => {onNavigate('admin'); console.log("clicked admin")}}
               variant={currentPage === 'admin' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
                 currentPage === 'admin' 

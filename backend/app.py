@@ -12,6 +12,10 @@ from dotenv import load_dotenv
 import json
 from flask_cors import CORS
 
+# for email password reset
+from flask_mail import Mail, Message
+
+
 # for slides (free but have logo near top middle)
 from spire.presentation.common import *
 from spire.presentation import *
@@ -23,9 +27,17 @@ UPLOAD_FOLDER = './static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # where ppt files will be stored temp
                                             # while ppt --> png happens
 
-
 # loading to read .env info
 load_dotenv()
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = os.environ['EMAIL_SENDER']
+app.config['MAIL_PASSWORD'] = os.environ['PASSWORD_SENDER']
+app.config['MAIL_DEFAULT_SENDER'] = os.environ['EMAIL_SENDER']
+
+mail = Mail(app)
 
 #-------------------------------------------------------------------------------
 #
@@ -166,37 +178,45 @@ def addAdmin(name, email, password):
 
 #-------------------------------------------------------------------------------
 #
-# Description: edit the information for a specific admin
+# Description: edit the password for a specific admin
 #
-# params: adminID --> unique _id of the user to edit
-#         name --> name of admin
-#         email -- > email of admin
-#         password --> password of admin
+# params: password --> password of admin
 # 
-# return: data --> edited admin info in json
+# return: 400 --> update not executed
+#         200 --> query executed
 # 
 #-------------------------------------------------------------------------------
-@app.route("/editAdmin/<adminID>/<name>/<email>/<password>", methods=['GET', 'POST', 'PUT'])
-def editAdmin(adminID, name, email, password):
+@app.route("/editAdmin", methods=['GET', 'POST', 'PUT'])
+def editAdmin():
+    print("inside edit admin")
     db = connect()                  # opens DB connection
     admins = db["admins"]           # specifically get admins table
 
-    adminID = intToObjID(adminID)   # mongoDB _id is ObjectId type so def takes str
-                                    # of id and returns type ObjectId for searching 
-                                    # specific id we want
+    stat = 200
+    password = request.args.get('password')         # get id sent as param
 
-    query = { "_id": adminID}       # query to get admin with specific id
+    print(password)
+
+    admin = getPartialAdmin()     # get user id with default partial name 'alex'
+    admin = json.loads(admin)       # turn into json
+    id = intToObjID(admin["_id"])   # turn adminID to ObjectId
+
+    query = { "_id": id}       # query to get admin with specific id
 
     # the new info we want to input into the id
-    edited = { "$set": { "name": name, "email": email, "password": password } }
+    edited = { "$set": { "password": password } }
 
-    admins.update_one(query, edited) # does the update
+    res = admins.update_one(query, edited) # does the update
+    changed = res.acknowledged                    # if query ran successfuly
+                                                  # acknowledged return true
 
-    data = db.admins.find_one({ "_id": adminID})    # search for admin with specific
-                                                    # id that was edited
+    if res == False:                    # if false then query was not executed
+        stat = 400
+
+    print(stat)
     
 
-    return json.dumps(data, default=str)
+    return f"{stat}"
 
 #-------------------------------------------------------------------------------
 #
@@ -673,6 +693,90 @@ def deleteMod(id):
 
     return getModNameID()
 
+################################################################################
+#
+#                          SECURITY MANIPULATIONS
+#
+################################################################################
+
+#-------------------------------------------------------------------------------
+#
+# Description: insert a new security question
+#
+# params: q --> question to add without '?'
+#         ans -- > the answer to the question
+# 
+# return: data --> info of added description in json
+# 
+#-------------------------------------------------------------------------------
+@app.route("/addSecureQ/<q>/<ans>", methods=['POST', 'GET'])
+def addSecureQ(q, ans):
+    db = connect()                  # open db connection
+    security = db["security"]       # get table for security
+
+    query = { "question": q, "answer": ans} # query to add security Q
+
+    x = security.insert_one(query)# insert new description 
+
+    # get the description just added (ensures it added), if null then not inserted
+    data = db.security.find_one({ "_id": ObjectId(x.inserted_id)}) 
+
+    return json.dumps(data, default=str)
+
+#-------------------------------------------------------------------------------
+#
+# Description: Will get the security questions needed to see if password should
+#              be reset or not
+#
+# params: NONE
+# 
+# return: data --> info of added description in json
+# 
+#-------------------------------------------------------------------------------
+@app.route("/getSecureQ", methods=['GET', 'POST', 'PUT'])
+def getSecureQ():
+    db = connect()                      # opens DB connection
+    security = db["security"]           # specifically get security table
+
+    data = []                           # make list for the data
+
+    for x in security.find({},{"answer": 0}): # parse thru info and add ea entry to data
+        data.append(x)
+
+    return json.dumps(data, default=str)
+
+#-------------------------------------------------------------------------------
+#
+# Description: edits the information of a description
+#
+# params: id --> _id of the description
+#         desc --> new description
+# 
+# return: stat --> 200 if user input correct answer
+#                  400 if user input wrong answer
+# 
+#-------------------------------------------------------------------------------
+@app.route("/verify", methods=['PUT', 'OPTIONS', 'GET'])
+def verify():
+    stat = 400                          # status code if user entered correct ans
+    id = request.args.get('id')         # get id sent as param
+    ans = request.args.get('answer')    # get answer sent as param
+    
+    db = connect()                      # opens DB connection
+    security = db["security"]           # specifically get security table
+
+    id = intToObjID(id)                 # takes id and return id in ObjectId
+
+    query = { "_id": id}                # want to find question associated w id
+    data = db.security.find_one(query)  # search for desc w prof _id
+
+    print(ans)
+    print(data['answer'])
+    if (int(ans) == int(data['answer'])):       # if answer correctly, change status code
+        print(" was correct ")
+        stat = 200
+
+    return f"{stat}"
 
 ################################################################################
 #
