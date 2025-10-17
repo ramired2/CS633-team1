@@ -3,9 +3,13 @@ import axios from 'axios';
 import { StudentView } from './components/StudentView';
 import { LoginPage } from './components/LoginPage';
 import { AdminView } from './components/AdminView';
+import PasswordReset from './components/PasswordReset'
+import { BrowserRouter as Router,
+          Routes,
+          Route,  } from 'react-router-dom';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin'>('student');
+  const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin' | 'reset'>('student');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 // added/edited
@@ -44,7 +48,7 @@ const [abtTextID, setAabtTextID] = useState('')
   };
 //
 
-  const navigateToPage = (page: 'student' | 'login' | 'admin') => {
+  const navigateToPage = (page: 'student' | 'login' | 'admin' | 'reset') => {
     if (page === 'admin' && !isLoggedIn) {
       setCurrentPage('login');
     } else {
@@ -66,9 +70,32 @@ const [abtTextID, setAabtTextID] = useState('')
     setAboutText(newText);
   };
 
-  return (
+  return (<Router>
     <div className="min-h-screen bg-gray-50">
-      {currentPage === 'student' && (
+            
+        <Routes>
+          <Route path="/resetPassword" element={<PasswordReset onNavigate={navigateToPage} />}/>
+        </Routes>
+
+        {currentPage === 'student' && (
+        <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
+      )}
+        {currentPage === 'login' && (
+          <LoginPage onLogin={handleLogin} onNavigate={navigateToPage} />
+          )}
+
+          {currentPage === 'admin' && (
+          <AdminView 
+                                            onNavigate={navigateToPage} 
+                                            onLogout={handleLogout} 
+                                            aboutText={aboutText}
+                                            abtTextID={abtTextID} // added description ID for admin edits
+                                            onUpdateAbout={handleUpdateAbout}
+                                          />
+          )}
+    
+
+      {/* {currentPage === 'student' && (
         <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
       )}
       {currentPage === 'login' && (
@@ -82,7 +109,7 @@ const [abtTextID, setAabtTextID] = useState('')
           abtTextID={abtTextID} // added description ID for admin edits
           onUpdateAbout={handleUpdateAbout}
         />
-      )}
-    </div>
+      )} */}
+    </div></Router>
   );
 }

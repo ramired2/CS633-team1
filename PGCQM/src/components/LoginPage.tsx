@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -7,41 +7,80 @@ import { Contact } from './Contact';
 import { Header } from './Header';
 
 import axios from 'axios'; // ADDED
+import { Link } from 'react-router-dom';
 
 interface LoginPageProps {
   onLogin: () => void;
-  onNavigate: (page: 'student' | 'login' | 'admin') => void;
+  onNavigate: (page: 'student' | 'login' | 'admin' | 'reset') => void;
 }
 
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const [bForgot, setBForgot] = useState(false)
 
   // ADDED
-  const [stat, setStat] = useState('');
-  const verifyCredentials = async() => {
-  const res = await axios (`http://localhost:5000/getAdmin/${userId.trim()}/${password.trim()}`, {
-      headers: { 'Content-Type': 'application/json'},
-      method: "GET",
-      })
-      .then(res => {
-          console.log(res.data)
-          setStat(res.data)
+  const [stat, setStat] = useState();
+  const [securityQ, setSecurityQ] = useState('');
+  const [answer, setAnswer] = useState('')
+  useEffect(() => {
+      getQ()   // api call for getting module imgs
+  
+    }, []);
 
-          if(res.data == '200'){
-            console.log("stat was: ", res.data)
-            onLogin();
-          }
-          else if(res.data == '300'){
-            console.log("stat was: ", res.data)
-            alert('Password was incorrect. Please try again.');
-          }
-          else {
-            console.log("stat was: ", res.data)
-              alert('Email and assword were incorrect. Please try again.');
-          }
-      })
-      .catch(err => console.log(err));
+  const verifyCredentials = async() => {
+    const res = await axios (`http://localhost:5000/getAdmin/${userId.trim()}/${password.trim()}`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        })
+        .then(res => {
+            console.log(res.data)
+            setStat(res.data)
+
+            if(res.data == '200'){
+              console.log("stat was: ", res.data)
+              onLogin();
+            }
+            else if(res.data == '300'){
+              console.log("stat was: ", res.data)
+              alert('Password was incorrect. Please try again.');
+            }
+            else {
+              console.log("stat was: ", res.data)
+                alert('Email and assword were incorrect. Please try again.');
+            }
+        })
+        .catch(err => console.log(err));
+  };
+
+  const getQ = async() => {
+    const res = await axios (`http://localhost:5000/getSecureQ`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        })
+        .then(res => {
+            console.log(res.data[0])
+            setSecurityQ(res.data[0])
+        })
+        .catch(err => console.log(err));
+        
+  };
+
+  const verifyQ = async() => {
+    const res = await axios (`http://localhost:5000/verify`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        params: {
+          answer: answer,
+          id: securityQ['_id']
+        },
+        })
+        .then(res => {
+            console.log(res.data)
+            setStat(res.data)
+        })
+        .catch(err => console.log(err));
+        
   };
     //
 
@@ -52,8 +91,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
       // ADDED
       verifyCredentials();
       //
-
-      // onLogin(); // rem
       
     } else {
       alert('Please enter both User ID and Password');
@@ -67,7 +104,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
 
       {/* Login Form Section */}
       <section className="py-16">
-        <div className="max-w-md mx-auto px-6">
+        {bForgot == false?<div className="max-w-md mx-auto px-6">
           <Card className="p-8 bg-white shadow-lg">
             <h3 className="text-2xl font-semibold text-gray-900 text-center mb-8">
               Admin Login
@@ -103,9 +140,36 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
               >
                 Login
               </Button>
+
+              <Label htmlFor="forgot" className="text-gray-700 passwordForget underlign forgotText" onClick={()=>{setBForgot(true)}}>Forgot password?</Label>
             </form>
           </Card>
-        </div>
+        </div>:
+        
+        <div className='max-w-md mx-auto px-6'>
+                  <div className='p-8 bg-white shadow-lg'>
+                    <p className='text-2xl font-semibold text-gray-900 text-center mb-8'>Answer question correctly to change password.</p>
+
+                    <p className='forgotText text-gray-700'>{securityQ['question']}?</p>
+                    <Input
+                    id="answer"
+                    type="answer"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    className="w-full"
+                    placeholder="Enter your response"
+                    />
+                    {stat == 400? <div>
+                                    <p>Answer was incorrect. Try again or look at your code documentation packet for further instructions.</p>
+                                  </div>:""}
+                    {stat != 200? <div>
+                                    <Button className="py-3 space topMargin" onClick={()=>{verifyQ();}}>check</Button>
+                                    <Button className="py-3 space topMargin" onClick={()=>{setBForgot(false)}}>cancel</Button>
+                                  </div>: ""}
+                    {stat == 200? <Link to="/resetPass"><Button className="py-3 space topMargin">Go to change password</Button></Link>: ""}
+                                  {/* <Button className="py-3 space topMargin">Go to change password</Button>} */}
+                  </div>
+                </div>}
       </section>
 
       {/* Contact Section */}

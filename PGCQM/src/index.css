@@ -2158,3 +2158,7 @@ html {
 .err {
   color: #a00;
 }
+
+.topMargin {
+  margin-top: 10px;
+}
