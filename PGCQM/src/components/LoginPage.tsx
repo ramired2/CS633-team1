@@ -166,7 +166,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
                                     <Button className="py-3 space topMargin" onClick={()=>{verifyQ();}}>check</Button>
                                     <Button className="py-3 space topMargin" onClick={()=>{setBForgot(false)}}>cancel</Button>
                                   </div>: ""}
-                    {stat == 200? <Link to="/resetPass"><Button className="py-3 space topMargin">Go to change password</Button></Link>: ""}
+                    {stat == 200? <Link to="/resetPassword"><Button className="py-3 space topMargin">Go to change password</Button></Link>: ""}
                                   {/* <Button className="py-3 space topMargin">Go to change password</Button>} */}
                   </div>
                 </div>}
