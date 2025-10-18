@@ -14,6 +14,7 @@ interface LoginPageProps {
 
 function PasswordReset({onNavigate }: LoginPageProps) {
   const [password, setPassword] = useState('');
+    const host = "http://localhost:3000/"
 
   // ADDED
   const [stat, setStat] = useState('');
@@ -31,13 +32,15 @@ function PasswordReset({onNavigate }: LoginPageProps) {
                 setStat(res.data)
             })
             .catch(err => console.log(err));
+
+            setTimeout(()=>{window.location.href = host}, 5000)
     };
   
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header onNavigate={onNavigate} currentPage="login" />
+      {/* <Header onNavigate={onNavigate} currentPage="login" /> */}
 
       {/* password reset Form Section */}
       <section className="py-16">
@@ -47,7 +50,7 @@ function PasswordReset({onNavigate }: LoginPageProps) {
               Password Reset
             </h3>
             {/* <form onSubmit={changePassword} className="space-y-6"> */}
-            {stat == String(200)?   <p className='text-center'>Successfuly reset!</p>:
+            {stat == String(200)?   <p className='text-center'>Successfuly reset! Please wait 5 seconds while we redirect you to the homepage.</p>:
                                     <div>
                                         <div className="space-y-2">
                                             <Label htmlFor="password" className="text-gray-700">Enter new password</Label>

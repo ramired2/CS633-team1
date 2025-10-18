@@ -39,6 +39,8 @@ app.config['MAIL_DEFAULT_SENDER'] = os.environ['EMAIL_SENDER']
 
 mail = Mail(app)
 
+uri = os.environ['URI']
+
 #-------------------------------------------------------------------------------
 #
 # Description: connects to db
@@ -49,7 +51,8 @@ mail = Mail(app)
 # 
 #-------------------------------------------------------------------------------
 def connect():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")  # connect db
+    # client = pymongo.MongoClient("mongodb://localhost:27017/")  # connect db
+    client = pymongo.MongoClient(uri)
     db = client["cs633"]                                        # db instance
 
     return db
@@ -534,14 +537,20 @@ def upload():
 
     for file in files:
         # print(f'file og name: {file.filename}')
-
-        filename = secure_filename(file.filename[:7])       # get file name -- all files start with module#
-
+        filename = ''
+        
         if('pptx' in file.filename):                        # get extension pptx OR ppt
             filenameExtension = '.pptx'
+            print(file.filename[-13:-5].replace(" ", "").lower())
+            filename = secure_filename(file.filename[-13:-5].replace(" ", "").lower())   # get filename and get mod #
         
         else:
             filenameExtension = '.ppt'
+
+            # file name follows format -- Patterns of Course QM Module #.ppt/x
+            filename = secure_filename(file.filename[-12:-4].replace(" ", "").lower())       # get mod #
+
+        
         
         #  any file will be named "module<#>_temp.ppt/x"
         # save file to static folder
@@ -551,7 +560,7 @@ def upload():
 
         presentation = Presentation()   # instance of ppt
 
-        # print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
+        print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
 
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
@@ -567,7 +576,7 @@ def upload():
 
         presentation.Dispose()          # get rid of ppt instance
 
-    return addMod(files)
+    return addMod(files, filenameExtension)
 
 #-------------------------------------------------------------------------------
 #
@@ -582,14 +591,17 @@ def upload():
 # 
 #-------------------------------------------------------------------------------
 @app.route("/addMod/<mod>", methods=['POST', 'GET', 'OPTIONS'])
-def addMod(files):
+def addMod(files, ext):
     db = connect()          # open db connection
     modules = db["modules"] # will create table modules
 
     arry = []               # list to store PNGs info (filename and binary data)
 
     for file in files:      # loop thru modules
-        mod = f'{file.filename[:7]}'                # specific module looking at atm
+        if ext == ".pptx":
+            mod = f'{file.filename[-13:-5].replace(" ", "").lower()}'                # specific module looking at atm
+        else:
+            mod = f'{file.filename[-12:-4].replace(" ", "").lower()}'
         print(f"adding pngs for {mod}")
 
         for i in range(6):      # loop to go thru the diff pngs to bytes and append to arry
