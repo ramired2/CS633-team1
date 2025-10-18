@@ -110,7 +110,12 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             console.log(res.data)
             if (res.data == '200'){
               setStat(200)
+              alert('About - CS 633 section updated successfully!');
             }
+            else {
+              alert('There was an error updating. Please try again later.');
+            }
+            
 
         })
         .catch(err => console.log(err));
@@ -230,13 +235,6 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     //ADDED
       // api call to update db 
       editDesc();
-
-    if(stat == 200) {
-      alert('About - CS 633 section updated successfully!');
-    }
-    else {
-      alert('There was an error updating. Please try again later.');
-    }
     //
     
   };
@@ -252,7 +250,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
           <div className="text-center mb-4">
             <h3 className="text-lg font-bold text-[#2D2926] mb-1">Sequence of the PPT Slide</h3>
             <p className="text-sm text-[#2D2926]">Standard structure for each module presentation</p>
-            <p className="text-sm text-[#2D2926]">Format file names as: 'Module#.ppt/pptx'</p>
+            <p className="text-sm text-[#2D2926]">Ensure files end with 'Module #.ppt/pptx'</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[

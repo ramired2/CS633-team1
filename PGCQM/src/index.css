@@ -2162,3 +2162,12 @@ html {
 .topMargin {
   margin-top: 10px;
 }
+
+.resetPasswordContainer {
+  position: absolute;
+  width: -webkit-fill-available;
+}
+
+.resetPasswordContainer::-webkit-scrollbar {
+  display: none;
+}

@@ -38,7 +38,7 @@ function PasswordReset({onNavigate }: LoginPageProps) {
   
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 resetPasswordContainer">
       {/* Header */}
       {/* <Header onNavigate={onNavigate} currentPage="login" /> */}
 
