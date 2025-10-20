@@ -12,9 +12,6 @@ from dotenv import load_dotenv
 import json
 from flask_cors import CORS
 
-# for email password reset
-from flask_mail import Mail, Message
-
 
 # for slides (free but have logo near top middle)
 from spire.presentation.common import *
@@ -29,15 +26,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # where ppt files will be stored tem
 
 # loading to read .env info
 load_dotenv()
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = os.environ['EMAIL_SENDER']
-app.config['MAIL_PASSWORD'] = os.environ['PASSWORD_SENDER']
-app.config['MAIL_DEFAULT_SENDER'] = os.environ['EMAIL_SENDER']
-
-mail = Mail(app)
 
 uri = os.environ['URI']
 
