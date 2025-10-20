@@ -15,6 +15,7 @@ interface StudentViewProps {
 }
 
 export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const [selectedModule, setSelectedModule] = useState("1");
   const [selectedContent, setSelectedContent] = useState('key-concepts');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
@@ -119,7 +120,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   * return NONE 
   * ***************************************************************************/
   const getMods = async() => {
-    const res = await axios (`http://localhost:5000/getMods`, {
+    const res = await axios (`${backend}/getMods`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })

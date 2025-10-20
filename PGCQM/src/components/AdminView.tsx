@@ -30,6 +30,7 @@ interface ModuleData {
 // }
 
 export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdateAbout }: AdminViewProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const [modules, setModules] = useState<File[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
     { id: 2, title: 'Module 2', file: null, fileName: 'File Location' },
@@ -68,7 +69,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
 
     const getIds = async() => {
     // let temp = "module1"
-    const res = await axios (`http://localhost:5000/getModNameID`, {
+    const res = await axios (`${backend}/getModNameID`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
@@ -83,7 +84,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   };
 
       const deletingMod = async() => {
-    const res = await axios (`http://localhost:5000/deleteMod/${deleteModule}`, {
+    const res = await axios (`${backend}/deleteMod/${deleteModule}`, {
         headers: { 'Content-Type': 'application/json'},
         method: "DELETE",
         })
@@ -98,7 +99,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   
     const editDesc = async() => {
     // let temp = "module1"
-    const res = await axios (`http://localhost:5000/editDesc`, {
+    const res = await axios (`${backend}/editDesc`, {
         method:'PUT',
         headers: { 'Content-Type': 'application/json'},
         params: {
@@ -149,7 +150,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const addMod = async(formData) => {
     // formData.forEach((value, key) => console.log(key, value))
 
-    let addModLink = `http://localhost:5000/upload`
+    let addModLink = `${backend}/upload`
     
     await axios.post(addModLink, formData)
     .then(result => {

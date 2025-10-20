@@ -13,14 +13,15 @@ interface LoginPageProps {
 }
 
 function PasswordReset({onNavigate }: LoginPageProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const [password, setPassword] = useState('');
-    const host = "http://localhost:3000/"
+  const host = "http://localhost:3000/"
 
   // ADDED
   const [stat, setStat] = useState('');
 
   const changePassword = async() => {
-        const res = await axios (`http://localhost:5000/editAdmin`, {
+        const res = await axios (`${backend}/editAdmin`, {
             headers: { 'Content-Type': 'application/json'},
             method: "GET",
             params: {

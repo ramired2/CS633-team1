@@ -10,6 +10,7 @@ interface HeaderProps {
 }
 
 export function Header({ onNavigate, currentPage, showLogout, onLogout }: HeaderProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const host = "http://localhost:3000/"
   return (
     <header className="bg-white shadow-lg border-b-2 border-[#E6E6E7]">

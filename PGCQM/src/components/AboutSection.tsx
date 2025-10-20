@@ -11,6 +11,7 @@ interface AboutSectionProps {
 }
 
 export function AboutSection({ aboutText }: AboutSectionProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
 
   // ADDED
   const [tempAboutText1, setTempAboutText1] = useState([])
@@ -30,7 +31,7 @@ export function AboutSection({ aboutText }: AboutSectionProps) {
   * return NONE 
   * ***************************************************************************/
   const getDesc = async() => {
-    const res = await axios (`http://localhost:5000/getDesc/`, {
+    const res = await axios (`${backend}/getDesc/`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })

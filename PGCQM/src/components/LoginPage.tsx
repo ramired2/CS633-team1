@@ -15,6 +15,7 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [bForgot, setBForgot] = useState(false)
@@ -29,7 +30,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
     }, []);
 
   const verifyCredentials = async() => {
-    const res = await axios (`http://localhost:5000/getAdmin/${userId.trim()}/${password.trim()}`, {
+    const res = await axios (`${backend}/getAdmin/${userId.trim()}/${password.trim()}`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
@@ -54,7 +55,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   };
 
   const getQ = async() => {
-    const res = await axios (`http://localhost:5000/getSecureQ`, {
+    const res = await axios (`${backend}/getSecureQ`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
@@ -67,7 +68,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   };
 
   const verifyQ = async() => {
-    const res = await axios (`http://localhost:5000/verify`, {
+    const res = await axios (`${backend}/verify`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         params: {

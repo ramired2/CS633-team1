@@ -9,6 +9,7 @@ import { BrowserRouter as Router,
           Route,  } from 'react-router-dom';
 
 export default function App() {
+  const backend = 'https://pgcqm-backend.onrender.com'
   const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin' | 'reset'>('student');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -31,7 +32,7 @@ const [abtTextID, setAabtTextID] = useState('')
   * return NONE 
   * ***************************************************************************/
   const getDesc = async() => {
-    const res = await axios (`http://localhost:5000/getDesc/`, {
+    const res = await axios (`${backend}/getDesc/`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
