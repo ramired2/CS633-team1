@@ -425,7 +425,8 @@
   }
 
   .-right-4 {
-    right: calc(var(--spacing) * -4);
+    /* right: calc(var(--spacing) * -4); */
+    right: calc(var(--spacing) * -5.5);
   }
 
   .right-2 {
@@ -2170,4 +2171,14 @@ html {
 
 .resetPasswordContainer::-webkit-scrollbar {
   display: none;
+}
+
+.white {
+  background-color: #fff;
+  border: 1px solid #c00;
+}
+
+.white:hover {
+  background-color: #c00;
+  color: #fff;
 }

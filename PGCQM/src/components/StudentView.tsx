@@ -20,6 +20,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   const [selectedContent, setSelectedContent] = useState('key-concepts');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [modIds, setModIds] = useState([])
 
   const contentButtons = [
     { id: 'key-concepts', label: 'Key Concepts', icon: BookOpen },
@@ -29,6 +30,21 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
     { id: 'quiz', label: 'Quiz', icon: HelpCircle },
     { id: 'faq', label: 'FAQ', icon: MessageCircle }
   ];
+
+  const getIds = async() => {
+    // let temp = "module1"
+    const res = await axios (`${backend}/getModNameID`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        })
+        .then(res => {
+            console.log(res.data)
+
+            setModIds(res.data)
+
+        })
+        .catch(err => console.log(err));
+    }
 
   // added/ edited
   const [moduleImages, setModuleImages] = useState({// Module 1: Software Quality Fundamentals
@@ -89,6 +105,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
 
    useEffect(() => {
     getMods()   // api call for getting module imgs
+    getIds()
 
   }, []);
 
@@ -106,7 +123,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
       return "https://images.unsplash.com/photo-1621361753831-e972c09ceec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2Z0d2FyZSUyMHF1YWxpdHklMjBjb25jZXB0c3xlbnwxfHx8fDE3NTkxMTM1Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
     }
     else {
-      // user clicked on module 'selectedModule' and wants to see tab 'selected content'
+      // user clicked on module 'selectedModule' and wants to see tab 'selected content
       return moduleImages[selectedModule]?.[selectedContent]
     }
   };
@@ -120,12 +137,12 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   * return NONE 
   * ***************************************************************************/
   const getMods = async() => {
-    const res = await axios (`${backend}/getMods`, {
+    const res = await axios (`http://127.0.0.1:5000/getMods`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
         .then(res => {
-            // console.log(res.data)
+            console.log(res.data)
 
             setModuleImages(res.data)
             setIsEmpty(false)
@@ -176,26 +193,26 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
             
             {/* Module Buttons */}
             <div className="space-y-2">
-              {[1, 2, 3, 4, 5, 6].map((module) => (
+              {modIds.map((num) => (
                 <Button
-                  key={module}
-                  onClick={() => {setSelectedModule(module.toString()); setSelectedContent('key-concepts');}}
+                  key={num['_id']}
+                  onClick={() => {setSelectedModule(num['modName'].substr(-1)); setSelectedContent('key-concepts');console.log(selectedModule)}}
                   className={`w-full ${sidebarCollapsed ? 'p-2 justify-center' : 'p-3'} h-auto flex items-center gap-2 transition-all ${
-                    selectedModule === module.toString()
+                    selectedModule === num['modName'].substr(-1)
                       ? 'bg-[#CC0000] text-white shadow-lg hover:bg-[#CC0000]'
                       : 'bg-white hover:bg-[#CC0000] hover:text-white text-[#2D2926] border-2 border-[#2D2926]'
                   }`}
-                  variant={selectedModule === module.toString() ? "default" : "outline"}
+                  variant={selectedModule === num['modName'].substr(-1) ? "default" : "outline"}
                 >
                   {sidebarCollapsed? <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${
-                    selectedModule === module.toString() 
+                    selectedModule === num['modName'].substr(-1) 
                       ? 'bg-white text-[#CC0000]' 
                       : 'bg-[#CC0000] text-white'
                   }`}>
-                    {module}
+                    {num['modName'].substr(-1)}
                   </div>: ""}
                   {!sidebarCollapsed && (
-                    <span className="font-medium text-sm">Module {module}</span>
+                    <span className="font-medium text-sm">Module {num['modName'].substr(-1)}</span>
                   )}
                 </Button>
               ))}

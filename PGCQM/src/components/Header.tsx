@@ -28,6 +28,18 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
             </div>
           </div>
           <div className="flex gap-3 items-center">
+            {/* BTN FOR ABOUT SECTION */}
+            {/* <a href="http://localhost:5173/#about"> */}
+              <Button onClick={()=>{window.location.href='http://localhost:5173/#about'}}
+              className={`px-6 py-2 flex items-center gap-2 transition-all ${
+                currentPage === 'admin' 
+                  ? 'bg-[#CC0000] text-white hover:bg-[#CC0000] hidden' 
+                  : 'border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-white white'
+              }`}
+              >
+                About
+                </Button>
+            {/* </a> */}
             <Button 
               onClick={() => {onNavigate('student'); console.log("clicked stud"); window.location.href = host;}}
               variant={currentPage === 'student' ? "default" : "outline"}
@@ -41,10 +53,10 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               Student View
             </Button>
             <Button 
-              onClick={() => {onNavigate('admin'); console.log("clicked admin")}}
+              onClick={() => {onNavigate('admin'); console.log("clicked admin"); console.log(currentPage); console.log(window.location.href)}}
               variant={currentPage === 'admin' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
-                currentPage === 'admin' 
+                currentPage === 'admin' || window.location.href == 'http://localhost:5173/#about'
                   ? 'bg-[#CC0000] text-white hover:bg-[#CC0000]' 
                   : 'border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-white'
               }`}

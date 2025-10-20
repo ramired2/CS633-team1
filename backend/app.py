@@ -479,7 +479,9 @@ def retreiveBytesToPng(modules, data, option="all"):
     if (option == "all"):       # want to get all of the modules imgs
         # print(modules.count())
         for j in range((modules.count())):  # will loop through modules
-            mod = f'module{j+1}'            # module name
+            idx = int(data[j]['modName'][-1])
+            print(f'CURRENT MOD IS {idx}')
+            mod = f'module{idx}'            # module name
 
             for i in range(6):                                      # loop through the pngs for ea module
                 listBytes.append(data[j]["pics"][i])                # save binary info to png to list
@@ -501,7 +503,7 @@ def retreiveBytesToPng(modules, data, option="all"):
             imgPillow.save(fileName, format='PNG')                  # Save the image as a PNG file
             # print(f"Image successfully saved as {fileName}")
         
-    return seeImgs('all')
+    return seeImgs('all', data)
 
 #-------------------------------------------------------------------------------
 #
@@ -632,17 +634,19 @@ def addMod(files, ext):
 # 
 #-------------------------------------------------------------------------------
 @app.route("/seeImgs/<option>", methods=['POST', 'GET', 'PUT'])
-def seeImgs(option):
+def seeImgs(option, data):
     db = connect()                          # opens DB connection
     modules = db["modules"]                 # specifically get modules table
     pics = {}                               # dict of module slides
 
     link = "https://pgcqm-backend.onrender.com/static"   # host link
+    # link = 'http://localhost:5000/'
 
     if(str(option) == 'all'):
         print("get all imgs")
         for j in range((modules.count())):      # loop thru modules
-            mod = f'module{j+1}'                # specific module looking at atm
+            idx = int(data[j]['modName'][-1])
+            mod = f'module{idx}'                # specific module looking at atm
 
             pics.update( {mod[-1]:   {
                                 "key-concepts": f'{link}/{mod}/{mod}_0.png',

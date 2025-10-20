@@ -62,8 +62,8 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       console.log(have)
 
       setMissingIds(totMods.filter(id => !have.includes(id)))
-      console.log(missingIds)
-      console.log(missingIds?.length)
+      // console.log(missingIds)
+      // console.log(missingIds?.length)
 
     }
 
@@ -156,6 +156,10 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     .then(result => {
       console.log(result.data); 
 
+      if(result.status != 200) {
+        alert('Error loading file. Try again later.')
+      }
+
       // if the file did not send for some reason server sends err msg "empty"
       if(result.data.includes('empty')) {
         alert('Error loading file. Try again later.')
@@ -219,7 +223,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   };
 
   const confirmDelete = () => {
-    console.log(deleteModule)
+    console.log(`DELETING: ${deleteModule}`)
     const moduleNum = parseInt(deleteModule);
     deletingMod()
     setDeleteModule('');
