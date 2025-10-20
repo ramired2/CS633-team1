@@ -637,7 +637,7 @@ def seeImgs(option):
     modules = db["modules"]                 # specifically get modules table
     pics = {}                               # dict of module slides
 
-    link = "http://localhost:5000/static"   # host link
+    link = "https://pgcqm-backend.onrender.com/static"   # host link
 
     if(str(option) == 'all'):
         print("get all imgs")
