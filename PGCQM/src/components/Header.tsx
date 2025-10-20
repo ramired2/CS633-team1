@@ -56,7 +56,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               onClick={() => {onNavigate('admin'); console.log("clicked admin"); console.log(currentPage); console.log(window.location.href)}}
               variant={currentPage === 'admin' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
-                currentPage === 'admin' || window.location.href == 'http://localhost:5173/#about'
+                currentPage === 'admin' || window.location.href == `${host}#about`
                   ? 'bg-[#CC0000] text-white hover:bg-[#CC0000]' 
                   : 'border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-white'
               }`}
