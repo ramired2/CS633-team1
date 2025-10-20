@@ -15,7 +15,7 @@ interface LoginPageProps {
 function PasswordReset({onNavigate }: LoginPageProps) {
   const backend = 'https://pgcqm-backend.onrender.com'
   const [password, setPassword] = useState('');
-  const host = "http://localhost:3000/"
+  const host = "https://pgcqm.onrender.com/"
 
   // ADDED
   const [stat, setStat] = useState('');
