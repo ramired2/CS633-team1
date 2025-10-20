@@ -30,7 +30,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
           <div className="flex gap-3 items-center">
             {/* BTN FOR ABOUT SECTION */}
             {/* <a href="http://localhost:5173/#about"> */}
-              <Button onClick={()=>{window.location.href='http://localhost:5173/#about'}}
+              <Button onClick={()=>{window.location.href=`${host}#about`}}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
                 currentPage === 'admin' 
                   ? 'bg-[#CC0000] text-white hover:bg-[#CC0000] hidden' 
