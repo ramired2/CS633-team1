@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 import json
 from flask_cors import CORS
 
-
 # for slides (free but have logo near top middle)
 from spire.presentation.common import *
 from spire.presentation import *
@@ -828,4 +827,5 @@ def deletePng(mod):
 if __name__ == "__main__":
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    app.run(debug=True, port=5000)
+    # app.run(debug=True, port=5000)
+    app.run(debug=True, port=0.0.0.0)
