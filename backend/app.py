@@ -16,6 +16,8 @@ from flask_cors import CORS
 from spire.presentation.common import *
 from spire.presentation import *
 
+# for font)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -518,6 +520,7 @@ def retreiveBytesToPng(modules, data, option="all"):
 @app.route("/upload", methods=['POST', 'GET', 'OPTIONS'])
 def upload():
     # print(request.files)
+    # font = "./font/calibri"
     
     if not request.files:           # checks if the file was received
         return str({'message': 'empty'}), 200

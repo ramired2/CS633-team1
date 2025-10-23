@@ -51,11 +51,13 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const [missingIds, setMissingIds] = useState<Number[]>()
   let [totFiles, setTotFiles] = useState<File[]>();
   const [stat, setStat] = useState(0)
+  const [whichDelete, setDelete] = useState()
 
      useEffect(() => {
       // api call for description
       getIds()
-    }, [deleteModule, ]);
+      console.log(whichDelete)
+    }, [deleteModule, whichDelete]);
 
     const checkAll = (info) => {
       const have = info.map((num) => (Number(num['modName'].substr(-1))))
@@ -83,8 +85,8 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         .catch(err => console.log(err));
   };
 
-      const deletingMod = async() => {
-    const res = await axios (`${backend}/deleteMod/${deleteModule}`, {
+    const deletingMod = async() => {
+      const res = await axios (`${backend}/deleteMod/${deleteModule}`, {
         headers: { 'Content-Type': 'application/json'},
         method: "DELETE",
         })
@@ -213,22 +215,32 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     // alert('Files submitted successfully!');
   };
 
+  const whichID = () => {
+    console.log(deleteModule)
+    setDelete(modIds.filter(mod => mod["_id"] == deleteModule))
+    console.log(whichDelete)
+  }
+
   const handleDelete = () => {
     if (!deleteModule) {
       alert('Please select a module to delete');
       return;
     }
+
+    whichID();
     
     setShowDeleteConfirm(true);
   };
 
   const confirmDelete = () => {
     console.log(`DELETING: ${deleteModule}`)
+    console.log(`DELETING: ${whichDelete}`)
+
     const moduleNum = parseInt(deleteModule);
     deletingMod()
     setDeleteModule('');
     setShowDeleteConfirm(false);
-    // alert(`Module ${tempDelete} file deleted successfully!`);
+    alert(`Module deleted successfully!`);
   };
 
   const handleUpdateAbout = () => {
@@ -435,7 +447,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
               Confirm Delete
             </h3>
             <p className="mb-6 text-gray-700">
-              Are you sure you want to delete this module? This action cannot be undone.
+              Are you sure you want to delete module {whichDelete.map(mod => {return mod['modName'].substr(-1)})}? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <Button
