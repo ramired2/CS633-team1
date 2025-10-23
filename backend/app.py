@@ -551,7 +551,7 @@ def upload():
         img = []                        # list to save imgs
 
         presentation = Presentation()   # instance of ppt
-        presentation.CustomFontFileDirectory=['./fonts']
+        presentation.CustomFontFileDirectory=['./font']
 
         # save to pdf
 
@@ -560,10 +560,17 @@ def upload():
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
 
-        # open presentation and change font
+        # change font
+        # for slide in presentation.Slides:
+        # for shape in slide.Shapes:
+        #     if isinstance(shape, IAutoShape): # Check if the shape is an AutoShape (contains text)
+        #         text_range = shape.TextFrame.TextRange
+        #         # Change font properties
+        #         text_range.LatinFont = TextFont("calibri") # Set a new font family
 
 
 
+        # FOR PNG
         for i, slide in enumerate(presentation.Slides):               # loop thru # slides
             fileName =f"./static/{filename}/{filename}_{str(i)}.png"  # folder location + name
         
