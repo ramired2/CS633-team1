@@ -551,11 +551,18 @@ def upload():
         img = []                        # list to save imgs
 
         presentation = Presentation()   # instance of ppt
+        presentation.CustomFontFileDirectory=['./fonts']
+
+        # save to pdf
 
         print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
 
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
+
+        # open presentation and change font
+
+
 
         for i, slide in enumerate(presentation.Slides):               # loop thru # slides
             fileName =f"./static/{filename}/{filename}_{str(i)}.png"  # folder location + name
