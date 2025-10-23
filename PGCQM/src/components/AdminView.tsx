@@ -171,7 +171,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       // reset prev data
 
     })
-    .catch(err => console.log(err));
+    .catch(err => {console.log(err); alert('Error loading file. Try again later.')});
   }
   // 
 
