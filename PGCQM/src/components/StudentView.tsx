@@ -16,7 +16,7 @@ interface StudentViewProps {
 
 export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
   const backend = 'https://pgcqm-backend.onrender.com'
-  const [selectedModule, setSelectedModule] = useState("1");
+  const [selectedModule, setSelectedModule] = useState();
   const [selectedContent, setSelectedContent] = useState('key-concepts');
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -41,6 +41,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
             console.log(res.data)
 
             setModIds(res.data)
+            setSelectedModule(res.data[0]["modName"].substr(-1))
 
         })
         .catch(err => console.log(err));
