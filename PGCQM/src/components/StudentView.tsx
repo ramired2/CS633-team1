@@ -148,7 +148,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
             setIsEmpty(false)
 
         })
-        .catch(err => console.log(err));
+        .catch(err => {console.log(err); alert("There was an error fetching the data. Please try again later. If the issue continues please contact professor Alex")});
   };
 
   // 
