@@ -11,12 +11,13 @@ interface HeaderProps {
 
 export function Header({ onNavigate, currentPage, showLogout, onLogout }: HeaderProps) {
   const backend = 'https://pgcqm-backend.onrender.com'
+  const local = "http://localhost:5173/"
   const host = "https://pgcqm.onrender.com/"
   return (
     <header className="bg-white shadow-lg border-b-2 border-[#E6E6E7]">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 home" onClick={()=>{window.location.href=`${local}`}}>
             <div className="bg-[#CC0000] text-white p-3 rounded-lg shadow-lg">
               <GraduationCap className="h-6 w-6" />
             </div>

@@ -255,7 +255,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
                           src={getCurrentImage()} 
                           alt={`Module ${selectedModule} - ${button.label}`}
                           className="w-full h-full object-cover"
-                        />:"loading"
+                        />:<p className='loading'>Loading...</p>
                         }
                       </div>
                       {/* <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded text-sm">

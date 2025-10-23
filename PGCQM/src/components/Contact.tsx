@@ -7,7 +7,7 @@ export function Contact() {
     <section className="bg-[#2D2926] text-white py-6 mt-6" id="about">
       <div className="max-w-7xl mx-auto px-6">
         <Card className="p-4 bg-[#2D2926] border-[#E6E6E7]">
-          <h3 className="text-lg font-semibold mb-3 text-white">Contact Alex Elenbauh</h3>
+          <h3 className="text-lg font-semibold mb-3 text-white">Contact Alex Elentukh</h3>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <Mail className="h-4 w-4 text-[#CC0000]" />
@@ -26,7 +26,7 @@ export function Contact() {
                 rel="noopener noreferrer"
                 className="text-gray-200 hover:text-[#CC0000] hover:underline transition-colors text-sm"
               >
-                https://www.linkedin.com/in/alexelenbauh/
+                https://www.linkedin.com/in/alexelentukh/
               </a>
             </div>
           </div>
