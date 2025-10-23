@@ -83,7 +83,7 @@ const [abtTextID, setAabtTextID] = useState('')
       )}
         {currentPage === 'login' && (
           <LoginPage onLogin={handleLogin} onNavigate={navigateToPage} />
-          )}
+        )}
 
           {currentPage === 'admin' && (
           <AdminView 

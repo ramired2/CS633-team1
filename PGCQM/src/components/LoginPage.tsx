@@ -30,7 +30,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
     }, []);
 
   const verifyCredentials = async() => {
-    const res = await axios (`${backend}/getAdmin/${userId.trim()}/${password.trim()}`, {
+    const res = await axios (`${backend}/getAdmin/${password.trim()}`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
@@ -42,13 +42,9 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
               console.log("stat was: ", res.data)
               onLogin();
             }
-            else if(res.data == '300'){
-              console.log("stat was: ", res.data)
-              alert('Password was incorrect. Please try again.');
-            }
             else {
               console.log("stat was: ", res.data)
-                alert('Email and assword were incorrect. Please try again.');
+              alert('Password was incorrect. Please try again.');
             }
         })
         .catch(err => console.log(err));
@@ -111,17 +107,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
               Admin Login
             </h3>
             <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="userId" className="text-gray-700">User ID</Label>
-                <Input
-                  id="userId"
-                  type="text"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  className="w-full"
-                  placeholder="Enter your user ID"
-                />
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-700">Password</Label>

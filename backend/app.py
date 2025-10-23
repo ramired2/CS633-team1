@@ -99,21 +99,21 @@ def getAllAdmins():
 #                  200 if correct for both
 # 
 #-------------------------------------------------------------------------------
-@app.route("/getAdmin/<email>/<password>", methods=['GET'])
-def getAdmin(email, password):
+@app.route("/getAdmin/<password>", methods=['GET'])
+def getAdmin(password):
     db = connect()                      # opens DB connection
     admins = db["admins"]               #specifically get admins table
     stat = '400'                        # default 400, dont login
 
-    query = { "email": email}           # query to find admin of specidic email
+    query = { "password": password}     # query to find admin of specidic email
     data = db.admins.find_one(query)    # search for admin
 
     if(data != None):                   # ensure user email found in db
         # case where email and password correct. let login
-        if(data['email'] == email and data['password'] == password):
+        if(data['password'] == password):
             stat = '200'
         # case where email correct, password wrong. dont login
-        elif ((data['email'] == email) and (data['password'] != password)):
+        elif (data['password'] != password):
             stat = '300'
 
     return stat
