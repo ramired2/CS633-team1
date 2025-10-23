@@ -551,7 +551,7 @@ def upload():
         img = []                        # list to save imgs
 
         presentation = Presentation()   # instance of ppt
-        presentation.AddEmbeddedFont("./font/calibri.ttf")
+        presentation.AddEmbeddedFont("./font/CALIBRI.TTF")
 
         # save to pdf
 
@@ -559,15 +559,6 @@ def upload():
 
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
-
-        # change font
-        # for slide in presentation.Slides:
-        # for shape in slide.Shapes:
-        #     if isinstance(shape, IAutoShape): # Check if the shape is an AutoShape (contains text)
-        #         text_range = shape.TextFrame.TextRange
-        #         # Change font properties
-        #         text_range.LatinFont = TextFont("calibri") # Set a new font family
-
 
 
         # FOR PNG
