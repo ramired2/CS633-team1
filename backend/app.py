@@ -551,7 +551,7 @@ def upload():
         img = []                        # list to save imgs
 
         presentation = Presentation()   # instance of ppt
-        presentation.AddEmbeddedFont("./static/font/calibri.ttf")
+        presentation.AddEmbeddedFont("./font/calibri.ttf")
 
         # save to pdf
 
