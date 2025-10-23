@@ -16,7 +16,6 @@ interface LoginPageProps {
 
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const backend = 'https://pgcqm-backend.onrender.com'
-  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [bForgot, setBForgot] = useState(false)
 
@@ -84,13 +83,13 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple mock validation - accept any non-empty credentials
-    if (userId.trim() && password.trim()) {
+    if (password.trim()) {
       // ADDED
       verifyCredentials();
       //
       
     } else {
-      alert('Please enter both User ID and Password');
+      alert('Please enter a Password');
     }
   };
 
