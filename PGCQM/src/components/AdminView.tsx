@@ -10,6 +10,7 @@ import { Header } from './Header';
 import { Upload, FileText, Trash2, Edit } from 'lucide-react';
 
 import axios from 'axios'; // ADDED
+import Spinner from './ui/Spinner';
 
 interface AdminViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -293,6 +294,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       </section>
 
       <div className="max-w-7xl mx-auto p-6">
+        <div className='greyOut'>{loading? <Spinner />: ""}</div>
 
         {/* Upload Table */}
         <Card className="p-6 mb-6">

@@ -8,6 +8,7 @@ import { Contact } from './Contact';
 import { Header } from './Header';
 import { Maximize, BookOpen, FileText, Target, PenTool, HelpCircle, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios'; // ADDED
+import Spinner from './ui/Spinner';
 
 interface StudentViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -248,14 +249,14 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
                   {/* Image Display Area - PPT Slide Size (16:9 aspect ratio) */}
                   <Card className="p-6 mb-6">
                     <div className="relative">
-                      <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                      <div className="w-full aspect-video bg-gray-100 rounded-lg overflow-hidden centerIt">
                         { // added if statement
                         isEmpty == false?
                         <img 
                           src={getCurrentImage()} 
                           alt={`Module ${selectedModule} - ${button.label}`}
                           className="w-full h-full object-cover"
-                        />:<p className='loading'>Loading...</p>
+                        />: <Spinner />
                         }
                       </div>
                       {/* <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-2 rounded text-sm">

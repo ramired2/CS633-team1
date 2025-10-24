@@ -52,7 +52,13 @@ const [abtTextID, setAabtTextID] = useState('')
   const navigateToPage = (page: 'student' | 'login' | 'admin' | 'reset') => {
     if (page === 'admin' && !isLoggedIn) {
       setCurrentPage('login');
-    } else {
+    } 
+    // else if (page == "reset") {
+    //   console.log("curr page resetPassword w admin")
+    //   setCurrentPage('login')
+    // }
+      
+    else {
       setCurrentPage(page);
     }
   };
@@ -71,46 +77,34 @@ const [abtTextID, setAabtTextID] = useState('')
     setAboutText(newText);
   };
 
-  return (<Router>
-    <div className="min-h-screen bg-gray-50">
-            
+  return (
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        
         <Routes>
+          {currentPage === 'student' && (<Route path="/" element={<StudentView onNavigate={navigateToPage} aboutText={aboutText} />}/>)}
           <Route path="/resetPassword" element={<PasswordReset onNavigate={navigateToPage} />}/>
         </Routes>
-
-        {currentPage === 'student' && (
-        <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
-      )}
+        
+        {/* {currentPage === 'student' && (
+          <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
+        )} */}
+        
         {currentPage === 'login' && (
           <LoginPage onLogin={handleLogin} onNavigate={navigateToPage} />
         )}
 
-          {currentPage === 'admin' && (
+        {currentPage === 'admin' && (
           <AdminView 
-                                            onNavigate={navigateToPage} 
-                                            onLogout={handleLogout} 
-                                            aboutText={aboutText}
-                                            abtTextID={abtTextID} // added description ID for admin edits
-                                            onUpdateAbout={handleUpdateAbout}
-                                          />
-          )}
-    
-
-      {/* {currentPage === 'student' && (
-        <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
-      )}
-      {currentPage === 'login' && (
-        <LoginPage onLogin={handleLogin} onNavigate={navigateToPage} />
-      )}
-      {currentPage === 'admin' && (
-        <AdminView 
-          onNavigate={navigateToPage} 
-          onLogout={handleLogout} 
-          aboutText={aboutText}
-          abtTextID={abtTextID} // added description ID for admin edits
-          onUpdateAbout={handleUpdateAbout}
-        />
-      )} */}
-    </div></Router>
+            onNavigate={navigateToPage} 
+            onLogout={handleLogout} 
+            aboutText={aboutText}
+            abtTextID={abtTextID} // added description ID for admin edits
+            onUpdateAbout={handleUpdateAbout}
+          />
+        )}
+      
+      </div>
+    </Router>
   );
 }

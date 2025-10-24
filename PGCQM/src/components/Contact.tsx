@@ -15,13 +15,13 @@ export function Contact() {
                 href="mailto:alelenbauh@aku.edu" 
                 className="text-gray-200 hover:text-[#CC0000] hover:underline transition-colors text-sm"
               >
-                alelenbauh@aku.edu
+                elentukh@bu.edu
               </a>
             </div>
             <div className="flex items-center gap-3">
               <Linkedin className="h-4 w-4 text-[#CC0000]" />
               <a 
-                href="https://www.linkedin.com/in/alexelenbauh/" 
+                href="https://www.linkedin.com/in/alexelentukh/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-200 hover:text-[#CC0000] hover:underline transition-colors text-sm"
