@@ -20,21 +20,34 @@ function PasswordReset({onNavigate }: LoginPageProps) {
   // ADDED
   const [stat, setStat] = useState('');
 
+  /*****************************************************************************
+   * 
+   * Desc:    API call to change old password to new password and redirects user
+   *          to main page after 5 seconds
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  *****************************************************************************/
   const changePassword = async() => {
-        const res = await axios (`${backend}/editAdmin`, {
-            headers: { 'Content-Type': 'application/json'},
-            method: "GET",
-            params: {
-            password: password
-            },
-            })
-            .then(res => {
-                console.log(res.data)
-                setStat(res.data)
-            })
-            .catch(err => console.log(err));
+    const res = await axios (`${backend}/editAdmin`, {
+        headers: { 'Content-Type': 'application/json'},
+        method: "GET",
+        params: {
+        password: password
+        },
+        })
+        .then(res => {
+            console.log(res.data)
+            setStat(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+          alert("There was an issue updating your password. Please try again later.")
+        });
 
-            setTimeout(()=>{window.location.href = host}, 5000)
+        setTimeout(()=>{window.location.href = host}, 5000)
     };
   
 

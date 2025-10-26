@@ -13,7 +13,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin' | 'reset'>('student');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-// added/edited
+// ADDED/EDITED
 const [aboutText, setAboutText] = useState([])
 const [abtTextID, setAabtTextID] = useState('')
 
@@ -39,8 +39,7 @@ const [abtTextID, setAabtTextID] = useState('')
         .then(res => {
           // mongoDB saves endline as "\\n" so replaces any "\\n" to "\n" 
           const temp = res.data['desc'].toString().replace(/\\n/gi, '\n');
-          // console.log(temp)
-          // console.log(res.data)
+          
           setAboutText(temp)
           setAabtTextID(res.data['_id'].toString())
 
@@ -52,11 +51,7 @@ const [abtTextID, setAabtTextID] = useState('')
   const navigateToPage = (page: 'student' | 'login' | 'admin' | 'reset') => {
     if (page === 'admin' && !isLoggedIn) {
       setCurrentPage('login');
-    } 
-    // else if (page == "reset") {
-    //   console.log("curr page resetPassword w admin")
-    //   setCurrentPage('login')
-    // }
+    }
       
     else {
       setCurrentPage(page);
@@ -85,10 +80,6 @@ const [abtTextID, setAabtTextID] = useState('')
           {currentPage === 'student' && (<Route path="/" element={<StudentView onNavigate={navigateToPage} aboutText={aboutText} />}/>)}
           <Route path="/resetPassword" element={<PasswordReset onNavigate={navigateToPage} />}/>
         </Routes>
-        
-        {/* {currentPage === 'student' && (
-          <StudentView onNavigate={navigateToPage} aboutText={aboutText} />
-        )} */}
         
         {currentPage === 'login' && (
           <LoginPage onLogin={handleLogin} onNavigate={navigateToPage} />
