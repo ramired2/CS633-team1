@@ -12,11 +12,9 @@ from dotenv import load_dotenv
 import json
 from flask_cors import CORS
 
-# for slides (free but have logo near top middle)
+# for slides (free but have logo near top right)
 from spire.presentation.common import *
 from spire.presentation import *
-
-# for font)
 
 app = Flask(__name__)
 CORS(app)
@@ -28,6 +26,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # where ppt files will be stored tem
 # loading to read .env info
 load_dotenv()
 
+# get mongoDB link
 uri = os.environ['URI']
 
 #-------------------------------------------------------------------------------
@@ -40,9 +39,8 @@ uri = os.environ['URI']
 # 
 #-------------------------------------------------------------------------------
 def connect():
-    # client = pymongo.MongoClient("mongodb://localhost:27017/")  # connect db
-    client = pymongo.MongoClient(uri)
-    db = client["cs633"]                                        # db instance
+    client = pymongo.MongoClient(uri)   # connect db
+    db = client["cs633"]                # db instance
 
     return db
 
@@ -89,13 +87,11 @@ def getAllAdmins():
 
 #-------------------------------------------------------------------------------
 #
-# Description: get a specific admin info by their email and check if we should
+# Description: Verify if the password passed is the same as curr admin password
 #
-# params: email --> email of the admin 
-#         password --> password of admin
+# params: password --> password of admin
 # 
-# return: stat --> 400 if wrong completely
-#                  300 if email right but wrong password
+# return: stat --> 300 if wrong password
 #                  200 if correct for both
 # 
 #-------------------------------------------------------------------------------
@@ -180,16 +176,13 @@ def addAdmin(name, email, password):
 #-------------------------------------------------------------------------------
 @app.route("/editAdmin", methods=['GET', 'POST', 'PUT'])
 def editAdmin():
-    print("inside edit admin")
     db = connect()                  # opens DB connection
     admins = db["admins"]           # specifically get admins table
 
-    stat = 200
-    password = request.args.get('password')         # get id sent as param
+    stat = 200                      # status for success/fail edit admin
+    password = request.args.get('password')         # get password sent as param
 
-    print(password)
-
-    admin = getPartialAdmin()     # get user id with default partial name 'alex'
+    admin = getPartialAdmin()       # get user id with default partial name 'alex'
     admin = json.loads(admin)       # turn into json
     id = intToObjID(admin["_id"])   # turn adminID to ObjectId
 
@@ -198,15 +191,12 @@ def editAdmin():
     # the new info we want to input into the id
     edited = { "$set": { "password": password } }
 
-    res = admins.update_one(query, edited) # does the update
+    res = admins.update_one(query, edited)        # does the update
     changed = res.acknowledged                    # if query ran successfuly
                                                   # acknowledged return true
 
     if res == False:                    # if false then query was not executed
         stat = 400
-
-    print(stat)
-    
 
     return f"{stat}"
 
@@ -250,7 +240,7 @@ def deleteAdmin(id):
 #-------------------------------------------------------------------------------
 #
 # Description: get all description for course for homepage. should only contain
-#              item when in deployment
+#              one item when in deployment
 #
 # params: NONE
 # 
@@ -472,7 +462,7 @@ def getMod(mod):
 #         option  --> "all" gets all pngs in db
 #                      any other value will be module name, so get PNGs for that
 # 
-# return: "saved imgs to static"
+# return: seeImgs() --> gets images from all "all" mods or a specific mod 'module#'
 # 
 #-------------------------------------------------------------------------------
 def retreiveBytesToPng(modules, data, option="all"):
@@ -480,10 +470,9 @@ def retreiveBytesToPng(modules, data, option="all"):
 
     if (option == "all"):       # want to get all of the modules imgs
         # print(modules.count())
-        for j in range((modules.count())):  # will loop through modules
-            idx = int(data[j]['modName'][-1])
-            print(f'CURRENT MOD IS {idx}')
-            mod = f'module{idx}'            # module name
+        for j in range((modules.count())):      # will loop through modules
+            idx = int(data[j]['modName'][-1])   # gets module #
+            mod = f'module{idx}'                # sets module name "module#"
 
             for i in range(6):                                      # loop through the pngs for ea module
                 listBytes.append(data[j]["pics"][i])                # save binary info to png to list
@@ -491,10 +480,10 @@ def retreiveBytesToPng(modules, data, option="all"):
                 imgBytes = io.BytesIO(data[j]["pics"][i]["pics"])   # binary --> pillow type
                 imgPillow = Image.open(imgBytes)                    # open the img info and put in imgPillow 
 
-                fileName = f"./static/{mod}/{mod}_{str(i)}.png" # name of file + where storing
+                fileName = f"./static/{mod}/{mod}_{str(i)}.png"     # name of file + where storing
                 imgPillow.save(fileName, format='PNG')              # Save the image as a PNG file
-                # print(f"Image successfully saved as {fileName}")
-    else:                                                           #want to get specific module bytes
+
+    else:                                                           # want to get specific module bytes
         for i in range(6):      # only loop through PNGs specific mod                                       
             listBytes.append(data["pics"][i])                       # save binary info to png to list
 
@@ -519,8 +508,6 @@ def retreiveBytesToPng(modules, data, option="all"):
 #-------------------------------------------------------------------------------
 @app.route("/upload", methods=['POST', 'GET', 'OPTIONS'])
 def upload():
-    # print(request.files)
-    # font = "./font/calibri"
     
     if not request.files:           # checks if the file was received
         return str({'message': 'empty'}), 200
@@ -528,23 +515,18 @@ def upload():
     files = request.files.getlist('file')
 
     for file in files:
-        # print(f'file og name: {file.filename}')
         filename = ''
         
-        if('pptx' in file.filename):                        # get extension pptx OR ppt
+        if('pptx' in file.filename):            # extension of powerpoint is pptx
             filenameExtension = '.pptx'
-            print(file.filename[-13:-5].replace(" ", "").lower())
+            # print(file.filename[-13:-5].replace(" ", "").lower())
             filename = secure_filename(file.filename[-13:-5].replace(" ", "").lower())   # get filename and get mod #
         
-        else:
+        else:                                   # extension of powepoint was ppt 
             filenameExtension = '.ppt'
+            filename = secure_filename(file.filename[-12:-4].replace(" ", "").lower())   # get mod #
 
-            # file name follows format -- Patterns of Course QM Module #.ppt/x
-            filename = secure_filename(file.filename[-12:-4].replace(" ", "").lower())       # get mod #
-
-        
-        
-        #  any file will be named "module<#>_temp.ppt/x"
+        # any file will be named "module<#>_temp.ppt/x"
         # save file to static folder
         file.save(os.path.join("./static", f'{filename}_temp{filenameExtension}').replace("\\","/") )  
 
@@ -553,13 +535,8 @@ def upload():
         presentation = Presentation()   # instance of ppt
         presentation.AddEmbeddedFont("./font/CALIBRI.TTF")
 
-        # save to pdf
-
-        print(f'FILE SHOULD BE IN./static/{filename}_temp{filenameExtension}')
-
         # load ppt
         presentation.LoadFromFile(f'./static/{filename}_temp{filenameExtension}')
-
 
         # FOR PNG
         for i, slide in enumerate(presentation.Slides):               # loop thru # slides
@@ -681,8 +658,7 @@ def seeImgs(option, data):
 #
 # params: id --> unique _id of the module
 # 
-# return: data --> if deleted will say "deleted", otherwise returns info for 
-#                   module that was supposed to be deleted
+# return: getModNameID() --> list of modules and their IDs in DB
 # 
 #-------------------------------------------------------------------------------
 @app.route("/deleteMod/<id>", methods=['GET', 'DELETE', 'PUT', 'OPTIONS'])
