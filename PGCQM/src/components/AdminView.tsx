@@ -9,8 +9,10 @@ import { Contact } from './Contact';
 import { Header } from './Header';
 import { Upload, FileText, Trash2, Edit } from 'lucide-react';
 
-import axios from 'axios'; // ADDED
+// ADDED
+import axios from 'axios';
 import Spinner from './ui/Spinner';
+//
 
 interface AdminViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -26,12 +28,9 @@ interface ModuleData {
   fileName: string;
 }
 
-// interface filesAdd {
-//     file: File | null;
-// }
-
 export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdateAbout }: AdminViewProps) {
   const backend = 'https://pgcqm-backend.onrender.com'
+
   const [modules, setModules] = useState<File[]>([
     { id: 1, title: 'Module 1', file: null, fileName: 'File Location' },
     { id: 2, title: 'Module 2', file: null, fileName: 'File Location' },
@@ -54,38 +53,68 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   const [stat, setStat] = useState(0)
   const [whichDelete, setDelete] = useState()
 
-     useEffect(() => {
-      // api call for description
-      getIds()
-      console.log(whichDelete)
-    }, [deleteModule, whichDelete]);
+  useEffect(() => {
+    getIds()  // api call for description
+  }, [deleteModule, whichDelete]);
 
-    const checkAll = (info) => {
-      const have = info.map((num) => (Number(num['modName'].substr(-1))))
-      console.log(have)
+  /***************************************************************************
+   * 
+   * Desc:  Checks what modules are missing from the six and sets it to 
+   *        missingIds that contains a list of numbers
+   * 
+   * Params:  info --> list of modules from DB
+   * 
+   * Return:
+   * 
+  ***************************************************************************/
+  const checkAll = (info) => {
+    // list of mods from DB
+    const have = info.map((num) => (Number(num['modName'].substr(-1))))
+    console.log(have)
 
-      setMissingIds(totMods.filter(id => !have.includes(id)))
-      // console.log(missingIds)
-      // console.log(missingIds?.length)
+    // determines which are missing from total mods
+    setMissingIds(totMods.filter(id => !have.includes(id)))
 
-    }
+  }
 
-    const getIds = async() => {
-    // let temp = "module1"
-    const res = await axios (`${backend}/getModNameID`, {
-        headers: { 'Content-Type': 'application/json'},
-        method: "GET",
-        })
-        .then(res => {
-            console.log(res.data)
+  /***************************************************************************
+   * 
+   * Desc:    Gets the IDs and module names from modules in DB and sets it in
+   *          modIds
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
+  const getIds = async() => {
+  const res = await axios (`${backend}/getModNameID`, {
+      headers: { 'Content-Type': 'application/json'},
+      method: "GET",
+      })
+      .then(res => {
+          console.log(res.data)
 
-            setModIds(res.data)
-            checkAll(res.data);
+          setModIds(res.data)
+          checkAll(res.data);
 
-        })
-        .catch(err => console.log(err));
+      })
+      .catch(err => {
+          console.log(err)
+          alert('Error loading modules. Try again later.'); 
+          setLoading(false)
+        });
   };
 
+  /***************************************************************************
+   * 
+   * Desc:    Deletes the module from the DB given its db id ('_id')
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
     const deletingMod = async() => {
       const res = await axios (`${backend}/deleteMod/${deleteModule}`, {
         headers: { 'Content-Type': 'application/json'},
@@ -93,40 +122,66 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         })
         .then(res => {
             console.log(`deleting ${deleteModule}`)
-            console.log(res.data)
+            setLoading(false)
             setModIds(res.data)
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err)
+            alert('Error deleting module. Try again later.'); 
+            setLoading(false)
+          });
   };
 
   
-    const editDesc = async() => {
-    // let temp = "module1"
-    const res = await axios (`${backend}/editDesc`, {
-        method:'PUT',
-        headers: { 'Content-Type': 'application/json'},
-        params: {
-          id: abtTextID,
-          description: tempAboutText
-        },
-        })
-        .then(res => {
-            console.log(res.data)
-            if (res.data == '200'){
-              setStat(200)
-              alert('About - CS 633 section updated successfully!');
-            }
-            else {
-              alert('There was an error updating. Please try again later.');
-            }
-            
+  /***************************************************************************
+   * 
+   * Desc:    Edits the description of the course desc using the desc _id
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
+  const editDesc = async() => {
+  const res = await axios (`${backend}/editDesc`, {
+      method:'PUT',
+      headers: { 'Content-Type': 'application/json'},
+      params: {
+        id: abtTextID,
+        description: tempAboutText
+      },
+      })
+      .then(res => {
+          console.log(res.data)
+          if (res.data == '200'){
+            setStat(200)
+            setLoading(false)
+          }
+          else {
+            alert('There was an error updating. Please try again later.');
+          }
+          
 
-        })
-        .catch(err => console.log(err));
+      })
+      .catch(err => {
+          console.log(err)
+          alert('There was an error updating the course description. Please try again later.')
+          setLoading(false)});
   };
 
-  //
-
+  /***************************************************************************
+   * 
+   * Desc:  Determines if correct ppt types are inserted and updates list of 
+   *        modules that will be affected. Adds current file added to 
+   *        totFiles which solely holds a list of files type File that will 
+   *        be uploaded
+   * 
+   * Params: moduleID --> id of the module [1,6]
+   *         file --> the file attempting to add
+   * 
+   * Return: NONE
+   * 
+  ***************************************************************************/
   const handleFileUpload = (moduleId: number, file: File) => {
     // Check if file is PPT
     const isPPT = file.name.toLowerCase().endsWith('.ppt') || 
@@ -149,10 +204,16 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     
   };
 
-  // ADDED
+  /***************************************************************************
+   * 
+   * Desc:    Will uploads the files to the DB 
+   *  
+   * Params:  formData --> type FromData that holds the files to be uploaded
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
   const addMod = async(formData) => {
-    // formData.forEach((value, key) => console.log(key, value))
-
     let addModLink = `${backend}/upload`
     
     await axios.post(addModLink, formData)
@@ -169,15 +230,23 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       }
 
       setLoading(false)
-      getIds();
-
-      // reset prev data
-
+      getIds();         // will update the list of modules currently in DB
     })
     .catch(err => {console.log(err); alert('Error loading file. Try again later.'); setLoading(false)});
   }
   // 
 
+  /***************************************************************************
+   * 
+   * Desc:    Clears out the module file management on admin screen and
+   *          adds the list of modules to be uploaded to a FormData that will
+   *          be used to send the files to the backend
+   * 
+   * Params:
+   * 
+   * Return:
+   * 
+  ***************************************************************************/
   const handleSubmit = () => {
     const hasUploadedFile = modules.some(module => module.file !== null);
     
@@ -189,15 +258,10 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     // ADDED api call to send to flask
     const formData = new FormData();
     totFiles?.forEach((indivFile) => formData.append('file', indivFile))
-  
-    console.log(totFiles)
-    console.log(formData)
 
-    // formData.forEach((value, key) => console.log(key, value))
     setLoading(true)
 
-    // api call
-    // /upload/<mod>
+    // api call to add modules
     addMod(formData);
 
     setTotFiles([]) // clear out files to b submitted
@@ -209,41 +273,76 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     { id: 5, title: 'Module 5', file: null, fileName: 'File Location' },
     { id: 6, title: 'Module 6', file: null, fileName: 'File Location' },
     ])
-
-    
-    // have to renew rest of data
-    
-    // alert('Files submitted successfully!');
   };
 
+  /***************************************************************************
+     * 
+     * Desc:    var deleteModule holds the _id (id from DB) and need to be able
+     *          to deferentiate the ID in terms of module 1--6 for verifyDelete.
+     *          will determine the ID to return from the _id
+     * 
+     * Params:  NONE
+     * 
+     * Return:  NONE
+     * 
+  ***************************************************************************/
   const whichID = () => {
     console.log(deleteModule)
     setDelete(modIds.filter(mod => mod["_id"] == deleteModule))
     console.log(whichDelete)
   }
 
+  /***************************************************************************
+   * 
+   * Desc:    Will determine which ID to delete in terms of 1--6 and sets
+   *          show verify delete message to user
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
   const handleDelete = () => {
-    if (!deleteModule) {
-      alert('Please select a module to delete');
-      return;
-    }
+      if (!deleteModule) {
+        alert('Please select a module to delete');
+        return;
+      }
 
-    whichID();
-    
-    setShowDeleteConfirm(true);
-  };
+      whichID();
+      
+      setShowDeleteConfirm(true);
+    };
 
+  /***************************************************************************
+   * 
+   * Desc:    Will ask user to verify wich to delete said module. and calls api
+   *          to delete it. 
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
   const confirmDelete = () => {
     console.log(`DELETING: ${deleteModule}`)
     console.log(`DELETING: ${whichDelete}`)
 
+    setLoading(true)
     const moduleNum = parseInt(deleteModule);
     deletingMod()
     setDeleteModule('');
     setShowDeleteConfirm(false);
-    alert(`Module deleted successfully!`);
   };
 
+  /***************************************************************************
+   * 
+   * Desc:    Will call api to update the course description
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  ***************************************************************************/
   const handleUpdateAbout = () => {
     if (!tempAboutText.trim()) {
       alert('Please enter text for the About section');
@@ -251,6 +350,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     }
     onUpdateAbout(tempAboutText);
     //ADDED
+      setLoading(true)
       // api call to update db 
       editDesc();
     //

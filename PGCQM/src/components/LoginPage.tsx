@@ -24,10 +24,20 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const [securityQ, setSecurityQ] = useState('');
   const [answer, setAnswer] = useState('')
   useEffect(() => {
-      getQ()   // api call for getting module imgs
+      getQ()   // api call for security question
   
-    }, []);
+  }, []);
 
+  /*****************************************************************************
+   * 
+   * Desc:    Will check if input password was correct  
+   * 
+   * Params:  NONE
+   * 
+   * Return:  200 --> was correct and allows user to log in
+   *          300 --> password was incorrect and does not allow user to login
+   * 
+  *****************************************************************************/
   const verifyCredentials = async() => {
     const res = await axios (`${backend}/getAdmin/${password.trim()}`, {
         headers: { 'Content-Type': 'application/json'},
@@ -49,6 +59,15 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         .catch(err => console.log(err));
   };
 
+  /*****************************************************************************
+   * 
+   * Desc:    Will get the security question 
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  *****************************************************************************/
   const getQ = async() => {
     const res = await axios (`${backend}/getSecureQ`, {
         headers: { 'Content-Type': 'application/json'},
@@ -62,6 +81,15 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         
   };
 
+  /*****************************************************************************
+   * 
+   * Desc:    Will check if security question answer was correct 
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  *****************************************************************************/
   const verifyQ = async() => {
     const res = await axios (`${backend}/verify`, {
         headers: { 'Content-Type': 'application/json'},
@@ -78,8 +106,17 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         .catch(err => console.log(err));
         
   };
-    //
 
+  /*****************************************************************************
+   * 
+   * Desc:    Will handle user login and calls api to double check user is allowed
+   *          to login 
+   * 
+   * Params:  NONE
+   * 
+   * Return:  NONE
+   * 
+  *****************************************************************************/
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple mock validation - accept any non-empty credentials
