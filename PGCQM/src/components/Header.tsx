@@ -30,7 +30,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
           </div>
           <div className="flex gap-3 items-center">
             {/* BTN FOR ABOUT SECTION */}
-              <Button onClick={()=>{if (currentPage === 'admin' || currentPage === 'login') {window.location.reload()} else {window.location.href=`${host}#about`}}}
+            <a href="#about"><Button onClick={()=>{if (currentPage === 'admin' || currentPage === 'login') {onNavigate('student')}}}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
                 currentPage === 'student' 
                   ? 'bg-[#CC0000] text-white hover:bg-[#CC0000]' 
@@ -39,7 +39,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               >
                 About
                 </Button>
-            {/* </a> */}
+            </a>
             <Button 
               onClick={() => {onNavigate('student'); console.log("clicked stud"); window.location.href = host;}}
               variant={currentPage === 'student' ? "default" : "outline"}
