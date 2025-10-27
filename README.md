@@ -21,15 +21,14 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 ## Important 
 * When uploading a deck
     - Ensure content is not near edges of slide as some content may be cut off
-    - Ensure naming conventions are being followed. A deck should have "Module <#>.ppt/x" at the end of the name to ensure it is placed in the correct module.
+    - Ensure naming conventions are being followed. A deck should\have "Module <#>.ppt/x" at the end of the name to ensure it is placed in the correct module.
 
+* After uploading a deck
+    - Double check each slide looks as desired in the Student View as some images, text, or items may have shifted or were cut off during ppt --> png conversion
 * Recommended Fonts
     - Calibri
     - Arial
     - Times New Roman
-
-* After uploading a deck
-    - Double check each slide looks as desired in the Student View as some images, text, or items may have shifted or were cut off during ppt --> png conversion
 * If many requests to the backend are done within a small timeframe, Render may cancel requests with a "Ran out of memory" error as the free plan only allows 512MG of memory. Simply wait a couple minutes before another attempt.
 
 ## Password Reset
@@ -56,7 +55,7 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 ![If successful, you will get a success message and be redirected to the main site within five seconds](./PGCQM/src/forgotPassword/step5.png)
 * If successful, you will get a success message and be redirected to the main site within five seconds
 
-[!NOTE]
+### Reset Password Link
 If you forget your password or simply do not want to go through the steps, there 
 is a special link where you can just copy and paste onto a web browser and it
 will instantly take you to step 4. This link will be provided in the PGCQM docs
