@@ -97,6 +97,7 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
     - "react-day-picker": "^8.10.1",
     - "react-dom": "^18.3.1",
     - "react-hook-form": "^7.55.0",
+    - "react-loader-spinner": "^7.0.3",
     - "react-resizable-panels": "^2.1.7",
     - "react-router-dom": "^7.9.4",
     - "recharts": "^2.15.2",

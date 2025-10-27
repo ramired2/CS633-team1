@@ -637,7 +637,7 @@ def seeImgs(option, data):
                                 "key-concepts": f'{link}/{mod}/{mod}_0.png',
                                 "summary": f'{link}/{mod}/{mod}_1.png',
                                 "principles": f'{link}/{mod}/{mod}_2.png',
-                                "do-notes": f'{link}/{mod}/{mod}_3.png',
+                                "do-nots": f'{link}/{mod}/{mod}_3.png',
                                 "quiz": f'{link}/{mod}/{mod}_4.png',
                                 "faq": f'{link}/{mod}/{mod}_5.png'}} )
     else:
@@ -646,7 +646,7 @@ def seeImgs(option, data):
                             "key-concepts": f'{link}/{option}/{option}_0.png',
                             "summary": f'{link}/{option}/{option}_1.png',
                             "principles": f'{link}/{option}/{option}_2.png',
-                            "do-notes": f'{link}/{option}/{option}_3.png',
+                            "do-nots": f'{link}/{option}/{option}_3.png',
                             "quiz": f'{link}/{option}/{option}_4.png',
                             "faq": f'{link}/{option}/{option}_5.png'}})
 
