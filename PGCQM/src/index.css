@@ -2191,3 +2191,7 @@ html {
   position: fixed;
   justify-self: center;
 }
+
+.dont {
+  display: none;
+}
