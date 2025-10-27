@@ -19,9 +19,9 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 [Click here to see the deployed webapp](https://pgcqm.onrender.com/)
 
 ## Important 
-* When uploading a deck
+* Before uploading a deck
     - Ensure content is not near edges of slide as some content may be cut off
-    - Ensure naming conventions are being followed. A deck should\have "Module <#>.ppt/x" at the end of the name to ensure it is placed in the correct module.
+    - Ensure naming conventions are being followed. A deck should</br>have "Module <#>.ppt/x" at the end of the name to ensure it is placed in the correct module.
 
 * After uploading a deck
     - Double check each slide looks as desired in the Student View as some images, text, or items may have shifted or were cut off during ppt --> png conversion
@@ -56,10 +56,7 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 * If successful, you will get a success message and be redirected to the main site within five seconds
 
 ### Reset Password Link
-If you forget your password or simply do not want to go through the steps, there 
-is a special link where you can just copy and paste onto a web browser and it
-will instantly take you to step 4. This link will be provided in the PGCQM docs
-to ensure the link cannot be accessed by simply anyone.
+If you forget your password or simply do not want to go through the steps, there is a special link where you can just copy and paste onto a web browser and it will instantly take you to step 4. This link will be provided in the PGCQM docs to ensure the link cannot be accessed by simply anyone.
 
 </details>
 
@@ -82,7 +79,7 @@ to ensure the link cannot be accessed by simply anyone.
 
 ## Software Packages 
 <details>
-<summary>Backend packages -- located in requirements.txt</summary>
+<summary>Backend Packages — requirements.txt</summary>
 
 * aspose_slides==25.9.0
 * blinker==1.9.0
@@ -109,7 +106,7 @@ to ensure the link cannot be accessed by simply anyone.
 </details>
 
 <details>
-<summary>Reacts packages -- located in package.json</summary>
+<summary>Reacts Packages — package.json</summary>
 
 * "@radix-ui/react-accordion": "^1.2.3",
 * "@radix-ui/react-alert-dialog": "^1.1.6",
