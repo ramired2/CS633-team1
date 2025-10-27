@@ -27,7 +27,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
     { id: 'key-concepts', label: 'Key Concepts', icon: BookOpen },
     { id: 'summary', label: 'Summary', icon: FileText },
     { id: 'principles', label: 'Principles', icon: Target },
-    { id: 'do-notes', label: 'Do-Notes', icon: PenTool },
+    { id: 'do-nots', label: 'Do-Nots', icon: PenTool },
     { id: 'quiz', label: 'Quiz', icon: HelpCircle },
     { id: 'faq', label: 'FAQ', icon: MessageCircle }
   ];
