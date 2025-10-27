@@ -1695,7 +1695,7 @@
     --tw-enter-scale: .95;
   }
 
-  @media (width >= 40rem) {
+  @media (width >= 60rem) {
     .sm\:inline {
       display: inline;
     }
