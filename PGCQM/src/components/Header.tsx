@@ -17,7 +17,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
     <header className="bg-white shadow-lg border-b-2 border-[#E6E6E7]">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4 home" onClick={()=>{window.location.href=`${host}`}}>
+          <div className="flex items-center gap-4 home" onClick={()=>{window.location.href=`/`}}>
             <div className="bg-[#CC0000] text-white p-3 rounded-lg shadow-lg">
               <GraduationCap className="h-6 w-6" />
             </div>
@@ -41,7 +41,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
                 </Button>
             </a>
             <Button 
-              onClick={() => {onNavigate('student'); console.log("clicked stud"); window.location.href = host;}}
+              onClick={() => {onNavigate('student'); console.log(showLogout); window.location.href = "/";}}
               variant={currentPage === 'student' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
                 currentPage === 'student' 
@@ -53,10 +53,10 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               Student View
             </Button>
             <Button 
-              onClick={() => {onNavigate('admin'); console.log("clicked admin"); console.log(currentPage); console.log(window.location.href)}}
+              onClick={() => {onNavigate('admin'); console.log(showLogout); console.log(currentPage); console.log(window.location.href)}}
               variant={currentPage === 'admin' ? "default" : "outline"}
               className={`px-6 py-2 flex items-center gap-2 transition-all ${
-                currentPage === 'admin' || window.location.href == `${host}#about`
+                currentPage === 'admin' || window.location.href == `/#about`
                   ? 'bg-[#CC0000] text-white hover:bg-[#CC0000]' 
                   : 'border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-white'
               }`}
