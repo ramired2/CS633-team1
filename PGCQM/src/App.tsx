@@ -11,7 +11,7 @@ import { BrowserRouter as Router,
 export default function App() {
   const backend = 'https://pgcqm-backend.onrender.com'
   const [currentPage, setCurrentPage] = useState<'student' | 'login' | 'admin' | 'reset'>('student');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState((sessionStorage.getItem("login")) == null? false : sessionStorage.getItem("login"));
 
 // ADDED/EDITED
 const [aboutText, setAboutText] = useState([])
@@ -20,6 +20,7 @@ const [abtTextID, setAabtTextID] = useState('')
    useEffect(() => {
     
     getDesc() // api call for description
+    console.log(isLoggedIn)
 
   }, [aboutText]);
 
@@ -61,11 +62,13 @@ const [abtTextID, setAabtTextID] = useState('')
   const handleLogin = () => {
     setIsLoggedIn(true);
     setCurrentPage('admin');
+    sessionStorage.setItem("login", "true");
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentPage('student');
+    sessionStorage.removeItem('login')
   };
 
   const handleUpdateAbout = (newText: Object) => {

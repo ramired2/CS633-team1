@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Contact } from './Contact';
 import { Header } from './Header';
 import { Upload, FileText, Trash2, Edit } from 'lucide-react';
+import 'toastr/build/toastr.min.css';
+import toastr from "toastr";
 
 // ADDED
 import axios from 'axios';
@@ -52,11 +54,61 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   let [totFiles, setTotFiles] = useState<File[]>();
   const [stat, setStat] = useState(0)
   const [whichDelete, setDelete] = useState()
+  const [showExamples, setShowExamples] = useState(false)
 
   useEffect(() => {
     getIds()  // api call for description
   }, [deleteModule, whichDelete]);
 
+  // TOASTR
+  const success = (choice) => {
+      toastr.options = {
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-top-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+    if(choice == 'file'){
+      toastr["success"]("File was successfully uploaded!", "Success")
+    }
+    else if (choice == 'desc') {
+      toastr["success"]("Description was successfully updated!", "Success")
+    }
+    else if (choice == "delete") {
+      toastr["success"]("Module was successfully deleted!", "Success")
+    }
+  }
+
+  const err = () => {
+      toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "0",
+        "extendedTimeOut": "0",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeIn"
+      }
+  }
   /***************************************************************************
    * 
    * Desc:  Checks what modules are missing from the six and sets it to 
@@ -101,7 +153,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       })
       .catch(err => {
           console.log(err)
-          alert('Error loading modules. Try again later.'); 
+          toastr["error"]("There was an error loading modules for deletion. The backend may have run out of memory on Renders free plan. Try again later.", "Retriving Data")
           setLoading(false)
         });
   };
@@ -124,10 +176,11 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             console.log(`deleting ${deleteModule}`)
             setLoading(false)
             setModIds(res.data)
+            success('delete')
         })
         .catch(err => {
             console.log(err)
-            alert('Error deleting module. Try again later.'); 
+            toastr["error"]("There was an error deleting the module. The backend may have run out of memory on Renders free plan. Try again later.", "Deleting Module")
             setLoading(false)
           });
   };
@@ -156,25 +209,26 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
           if (res.data == '200'){
             setStat(200)
             setLoading(false)
+            success('desc')
           }
           else {
-            alert('There was an error updating. Please try again later.');
+            toastr["error"]("There was an error updating the description. The backend may have run out of memory on Renders free plan. Try again later.", "Updating Description")
           }
           
 
       })
       .catch(err => {
           console.log(err)
-          alert('There was an error updating the course description. Please try again later.')
+          toastr["error"]("There was an error updating the description. The backend may have run out of memory on Renders free plan. Try again later.", "Updating Description")
           setLoading(false)});
   };
 
   /***************************************************************************
    * 
-   * Desc:  Determines if correct ppt types are inserted and updates list of 
-   *        modules that will be affected. Adds current file added to 
-   *        totFiles which solely holds a list of files type File that will 
-   *        be uploaded
+   * Desc:  Determines if correct ppt types and file name conventions are being 
+   *        followed and updates list of modules that will be affected. Adds
+   *        current file added to totFiles which solely holds a list of files 
+   *        type File that will be uploaded
    * 
    * Params: moduleID --> id of the module [1,6]
    *         file --> the file attempting to add
@@ -189,9 +243,30 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
                   file.type.includes('presentation');
     
     if (!isPPT) {
-      alert('Please upload only PPT or PPTX files');
+      toastr["warning"]("Please upload only PPT or PPTX files", "Check File Type")
+      
       return;
     }
+    console.log("FILE NAME")
+    console.log(file.name)
+    var checkName = file.name
+    // remove ppt/x
+    if (checkName.endsWith(".pptx")){
+      // removes .pptx from file name (5) and with mod # 6
+      // Patterns of Course QM Module 6.pptx --> Patterns of Course QM Module 6 --> Patterns of Course QM Module 
+      checkName = checkName.substring(0, checkName.length - 6)
+    }
+    else {
+      // remove .ppt from file name (4) and with mod # 6
+      // Patterns of Course QM Module 6.ppt --> Patterns of Course QM Module 6 --> Patterns of Course QM Module 
+      checkName = checkName.substring(0, checkName.length - 5)
+    }
+    // check ends with "Module "
+    if(!checkName.endsWith("Module ")) {
+      toastr["warning"]("File name did not end in <br />'Module #'. Fix the file name and try again.", "Check File Name")
+      return;
+    }
+    
 
     setModules(prev => prev.map(module => 
       module.id === moduleId 
@@ -218,21 +293,25 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     
     await axios.post(addModLink, formData)
     .then(result => {
-      console.log(result.data); 
+      console.log(result.data);
 
       if(result.status != 200) {
-        alert('Error loading file. Try again later.')
+        toastr["error"]("The server received a file that did not follow naming conventions. Check your file names and try again.", "Error")
       }
 
       // if the file did not send for some reason server sends err msg "empty"
       if(result.data.includes('empty')) {
-        alert('Error loading file. Try again later.')
+        toastr["error"]("The server did not receive the file(s). Ensure naming conventions are followed and try again.", "Error")
       }
 
       setLoading(false)
       getIds();         // will update the list of modules currently in DB
+      success('file')
     })
-    .catch(err => {console.log(err); alert('Error loading file. Try again later.'); setLoading(false)});
+    .catch(err => {console.log(err);
+       setLoading(false)
+       toastr["error"]("Error uploading file(s). This may be because of incorrectly named file(s) or the backend may have run out of memory on Renders free plan. Please check file names. If issue persists after fixing file names, then this is a Render memory issue and simply try uploading again later.", "Error")
+      });
   }
   // 
 
@@ -251,7 +330,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     const hasUploadedFile = modules.some(module => module.file !== null);
     
     if (!hasUploadedFile) {
-      alert('Please upload at least one PPT file before submitting');
+      toastr["warning"]("Please upload at least one PPT file before submitting", "Check your file extension")
       return;
     }
 
@@ -304,7 +383,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   ***************************************************************************/
   const handleDelete = () => {
       if (!deleteModule) {
-        alert('Please select a module to delete');
+        toastr["warning"]("Please select a module to delete", "Select a Module")
         return;
       }
 
@@ -345,7 +424,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
   ***************************************************************************/
   const handleUpdateAbout = () => {
     if (!tempAboutText.trim()) {
-      alert('Please enter text for the About section');
+      toastr["warning"]("Please enter text for the About section", "About is empty")
       return;
     }
     onUpdateAbout(tempAboutText);
@@ -368,7 +447,6 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
           <div className="text-center mb-4">
             <h3 className="text-lg font-bold text-[#2D2926] mb-1">Sequence of the PPT Slide</h3>
             <p className="text-sm text-[#2D2926]">Standard structure for each module presentation</p>
-            <p className="text-sm text-[#2D2926]">Ensure files end with 'Module #.ppt/pptx'</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
@@ -399,6 +477,35 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         {/* Upload Table */}
         <Card className="p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">Module File Management</h3>
+          <div className='namingList'>
+            <h4 className="text-[#2D2926] mb-1">Please ensure each file name ends with "Module #".</h4>
+            <p className='text-sm text-[#2D2926] sm-margin'>Some examples below fit the naming criteria</p>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 1</li>
+              <li className='text-sm'>Module 1</li>  
+            </ul>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 2</li>
+              <li className='text-sm'>Module 2</li>
+            </ul>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 3</li>
+              <li className='text-sm'>Module 3</li>
+              </ul>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 4</li>
+              <li className='text-sm'>Module 4</li>
+            </ul>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 5</li>
+              <li className='text-sm'>Module 5</li>
+            </ul>
+            <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 6</li>
+              <li className='text-sm'>Module 6</li>
+            </ul>
+          </div>
+          
           {loading == true? <h6>Uploading file(s). Please wait before refreshing or leaving page.</h6>:""}
           {(missingIds?.length > 0 && missingIds?.length != undefined) || (missingIds?.length > 0)? <h4 className='err'>Missing deck for module(s): {missingIds.toString()}</h4>:""}
           <div className="overflow-x-auto">

@@ -9,6 +9,8 @@ import { Header } from './Header';
 import { Maximize, BookOpen, FileText, Target, PenTool, HelpCircle, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios'; // ADDED
 import Spinner from './ui/Spinner';
+import 'toastr/build/toastr.min.css';
+import toastr from "toastr";
 
 interface StudentViewProps {
   onNavigate: (page: 'student' | 'login' | 'admin') => void;
@@ -165,7 +167,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
             setIsEmpty(false)
 
         })
-        .catch(err => {console.log(err); alert("There was an error fetching the data. Please try again later.")});
+        .catch(err => {console.log(err); toastr["error"]("There was an error retrieving data. Please try again later.", "Error Retrieving Data")});
   };
 
   // 
