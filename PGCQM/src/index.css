@@ -2198,7 +2198,7 @@ html {
 
 .naming{
   display: flex;
-  flex-flow: row wrap;
+  /* flex-flow: row wrap; */
 }
 
 .naming > li {
