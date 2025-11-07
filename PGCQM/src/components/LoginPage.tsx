@@ -167,7 +167,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
 
               <Button
                 type="submit"
-                className="w-full py-3"
+                className="w-full py-3 hover:bg-[#302f2d]"
               >
                 Login
               </Button>
@@ -191,10 +191,10 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
                     placeholder="Enter your response"
                     />
                     {stat != 200? <div className='mt-6 twoBtns'>
-                                    <Button className="py-3 w-45p" onClick={()=>{verifyQ();}}>check</Button>
-                                    <Button className="py-3 w-45p" onClick={()=>{setBForgot(false)}}>cancel</Button>
+                                    <Button className="py-3 w-45p hover:bg-[#302f2d]" onClick={()=>{verifyQ();}}>check</Button>
+                                    <Button className="py-3 w-45p hover:bg-[#302f2d]" onClick={()=>{setBForgot(false)}}>cancel</Button>
                                   </div>: ""}
-                    {stat == 200? <Link to="/resetPassword"><Button className="py-3 mt-6">Go to change password</Button></Link>: ""}
+                    {stat == 200? <Link to="/resetPassword"><Button className="py-3 mt-6 hover:bg-[#302f2d]">Go to change password</Button></Link>: ""}
                                   {/* <Button className="py-3 space">Go to change password</Button>} */}
                   </div>
                 </div>}

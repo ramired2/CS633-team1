@@ -90,7 +90,7 @@ function PasswordReset({onNavigate }: LoginPageProps) {
 
                                         <Button
                                             type="submit"
-                                            className="w-full py-3 mt-6"
+                                            className="w-full py-3 mt-6 hover:bg-[#302f2d]"
                                             onClick={()=>{changePassword();}}>
                                             Change password
                                         </Button>

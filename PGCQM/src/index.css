@@ -1398,6 +1398,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-\[\#302f2d\]:hover {
+      background-color: #302f2d;
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-\[\#AA0000\]:hover {
       background-color: #a00;
     }
