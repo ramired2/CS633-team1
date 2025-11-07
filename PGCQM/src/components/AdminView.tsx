@@ -554,7 +554,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             <Button
               onClick={handleSubmit}
               size="lg"
-              className="px-12 py-3"
+              className="px-12 py-3 hover:bg-[#AA0000] bg-[#CC0000]"
             >
               Submit All Changes
             </Button>
@@ -584,7 +584,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
               onClick={handleDelete}
               disabled={!deleteModule}
               variant="destructive"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:bg-[#AA0000]"
             >
               <Trash2 className="h-4 w-4" />
               Delete

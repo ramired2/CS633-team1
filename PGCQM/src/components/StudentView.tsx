@@ -219,7 +219,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
                   className={`w-full ${sidebarCollapsed ? 'p-2 justify-center' : 'p-3'} h-auto flex items-center gap-2 transition-all ${
                     selectedModule === num['modName'].substr(-1)
                       ? 'bg-[#CC0000] text-white shadow-lg hover:bg-[#CC0000]'
-                      : 'bg-white hover:bg-[#CC0000] hover:text-white text-[#2D2926] border-2 border-[#2D2926]'
+                      : 'bg-white hover:bg-[#CC0000] hover:text-white text-[#2D2926] border border-[#2D2926]'
                   }`}
                   variant={selectedModule === num['modName'].substr(-1) ? "default" : "outline"}
                 >

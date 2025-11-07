@@ -874,7 +874,7 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
-
+  
   .border-2 {
     border-style: var(--tw-border-style);
     border-width: 2px;
@@ -2210,4 +2210,8 @@ html {
 
 .sm-margin {
   margin-bottom: 7px;
+}
+
+button:hover, .hovering:hover {
+  cursor: pointer;
 }
