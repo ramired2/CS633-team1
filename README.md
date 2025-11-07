@@ -19,6 +19,7 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 [Click here to see the deployed webapp](https://pgcqm.onrender.com/)
 
 ## Important 
+* All login information will be included in the project documentation
 * Before uploading a deck
     - Ensure content is not near edges of slide as some content may be cut off
     - Ensure naming conventions are being followed. A deck should</br>have "Module <#>.ppt/x" at the end of the name to ensure it is placed in the correct module.
@@ -56,7 +57,7 @@ PGCQM is a webapp expanding on [this](https://alexelentukh.webflow.io/) website 
 * If successful, you will get a success message and be redirected to the main site within five seconds
 
 ### Reset Password Link
-If you forget your password or simply do not want to go through the steps, there is a special link where you can just copy and paste onto a web browser and it will instantly take you to step 4. This link will be provided in the PGCQM docs to ensure the link cannot be accessed by simply anyone.
+If you forget your password or simply do not want to go through the steps, there is a special [link](https://pgcqm.onrender.com/resetPassword) where you can just copy and paste onto a web browser and it will instantly take you to step 4.
 
 </details>
 
@@ -74,6 +75,7 @@ If you forget your password or simply do not want to go through the steps, there
     ```
 * Frontend
     ```
+    npm install
     npm run dev
     ```
 
@@ -152,8 +154,7 @@ If you forget your password or simply do not want to go through the steps, there
 * "recharts": "^2.15.2",
 * "sonner": "^2.0.3",
 * "tailwind-merge": "*",
+* "toastr": "^2.1.4",
 * "vaul": "^1.1.2"
 
 </details>
-
-## Unrealized Features
