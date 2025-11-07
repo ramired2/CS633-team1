@@ -5,6 +5,8 @@ import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Contact } from './Contact';
 import { Header } from './Header';
+import 'toastr/build/toastr.min.css';
+import toastr from "toastr";
 
 import axios from 'axios'; // ADDED
 import { Link } from 'react-router-dom';
@@ -102,6 +104,13 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         .then(res => {
             console.log(res.data)
             setStat(res.data)
+
+            if(res.data == 200) {
+              toastr["success"]("Security question was correct.", "Answer was Correct")
+            }
+            else {
+              toastr["error"]("Answer was incorrect. If this continues, look at the documentation packet for further instructions.", "Try again")
+            }
         })
         .catch(err => console.log(err));
         
@@ -170,26 +179,23 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
         
         <div className='max-w-md mx-auto px-6'>
                   <div className='p-8 bg-white shadow-lg'>
-                    <p className='text-2xl font-semibold text-gray-900 text-center mb-8'>Answer question correctly to change password.</p>
+                    <h3 className="text-2xl font-semibold text-gray-900 text-center mb-8">Answer Question Correctly to Change Password</h3>
 
-                    <p className='forgotText text-gray-700'>{securityQ['question']}?</p>
+                    <p className='mt-6 flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-gray-700'>{securityQ['question']}?</p>
                     <Input
                     id="answer"
                     type="answer"
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
-                    className="w-full"
+                    className="w-full mt-6"
                     placeholder="Enter your response"
                     />
-                    {stat == 400? <div>
-                                    <p>Answer was incorrect. Try again or look at your code documentation packet for further instructions.</p>
-                                  </div>:""}
-                    {stat != 200? <div>
-                                    <Button className="py-3 space topMargin" onClick={()=>{verifyQ();}}>check</Button>
-                                    <Button className="py-3 space topMargin" onClick={()=>{setBForgot(false)}}>cancel</Button>
+                    {stat != 200? <div className='mt-6 twoBtns'>
+                                    <Button className="py-3 w-45p" onClick={()=>{verifyQ();}}>check</Button>
+                                    <Button className="py-3 w-45p" onClick={()=>{setBForgot(false)}}>cancel</Button>
                                   </div>: ""}
-                    {stat == 200? <Link to="/resetPassword"><Button className="py-3 space topMargin">Go to change password</Button></Link>: ""}
-                                  {/* <Button className="py-3 space topMargin">Go to change password</Button>} */}
+                    {stat == 200? <Link to="/resetPassword"><Button className="py-3 mt-6">Go to change password</Button></Link>: ""}
+                                  {/* <Button className="py-3 space">Go to change password</Button>} */}
                   </div>
                 </div>}
       </section>

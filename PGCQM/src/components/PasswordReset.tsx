@@ -6,6 +6,9 @@ import { Card } from './ui/card';
 import { Contact } from './Contact';
 import { Header } from './Header';
 
+import 'toastr/build/toastr.min.css';
+import toastr from "toastr";
+
 import axios from 'axios'; // ADDED
 
 interface LoginPageProps {
@@ -41,13 +44,21 @@ function PasswordReset({onNavigate }: LoginPageProps) {
         .then(res => {
             console.log(res.data)
             setStat(res.data)
+
+            if(res.data == 200) {
+              toastr["success"]("Password was successfully changed. You will be redirected to the student view within five seconds.", "Success")
+            }
+            else {
+              toastr["error"]("The backend may have run out of memory on Renders free plan. Wait a few minutes before attempting to reset password.", "Server Issue")
+            }
+
         })
         .catch(err => {
           console.log(err)
-          alert("There was an issue updating your password. Please try again later.")
+          toastr["error"]("The backend may have run out of memory on Renders free plan. Wait a few minutes before attempting to reset password.", "Server Issue")
         });
 
-        setTimeout(()=>{window.location.href = host}, 5000)
+        setTimeout(()=>{window.location.href = '/'}, 5000)
     };
   
 
@@ -64,23 +75,23 @@ function PasswordReset({onNavigate }: LoginPageProps) {
               Password Reset
             </h3>
             {/* <form onSubmit={changePassword} className="space-y-6"> */}
-            {stat == String(200)?   <p className='text-center'>Successfuly reset! Please wait 5 seconds while we redirect you to the homepage.</p>:
+            {stat == String(200)?   <p className='text-center flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-gray-700'>Successfuly reset! Please wait 5 seconds while we redirect you to the homepage.</p>:
                                     <div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="password" className="text-gray-700">Enter new password</Label>
+                                            <Label htmlFor="password" className="text-gray-700">Change Password</Label>
                                             <Input
                                             id="password"
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full"
+                                            className="w-full border-input mt-6"
                                             placeholder="Enter your new password"
                                             />
                                         </div>
 
                                         <Button
                                             type="submit"
-                                            className="w-full py-3"
+                                            className="w-full py-3 mt-6"
                                             onClick={()=>{changePassword();}}>
                                             Change password
                                         </Button>

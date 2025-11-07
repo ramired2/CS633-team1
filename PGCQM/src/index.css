@@ -672,6 +672,10 @@
     width: fit-content;
   }
 
+  .w-45p {
+    width: 45%;
+  }
+
   .w-full {
     width: 100%;
   }
@@ -2214,4 +2218,9 @@ html {
 
 button:hover, .hovering:hover {
   cursor: pointer;
+}
+
+.twoBtns {
+  justify-content: space-between;
+  display: flex;
 }

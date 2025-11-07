@@ -68,7 +68,7 @@ export function Header({ onNavigate, currentPage, showLogout, onLogout }: Header
               <Button 
                 onClick={onLogout}
                 variant="outline"
-                className="px-6 py-2 flex items-center gap-2 border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-white transition-all"
+                className="px-6 py-2 flex items-center gap-2 border-[#2D2926] text-[#2D2926] dark:hover:bg-logout/50 transition-all"
               >
                 <LogOut className="h-4 w-4 " />
                 Logout
