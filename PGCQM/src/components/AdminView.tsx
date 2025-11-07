@@ -562,7 +562,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         </Card>
 
         {/* Delete Module Section */}
-        <Card className="p-6 mb-6 ">
+        <Card className="p-6 mb-6 mt-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Delete Module Content</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
@@ -593,7 +593,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         </Card>
 
         {/* Update About - CS 633 Section */}
-        <Card className="p-6 mb-6 border-2 border-[#E6E6E7]">
+        <Card className="p-6 mb-6 border-2 border-[#E6E6E7] mt-6">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-xl font-semibold text-gray-900">Update About - CS 633</h3>
             <Badge variant="outline" className="text-xs">Database Content</Badge>
