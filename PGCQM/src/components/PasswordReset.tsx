@@ -47,9 +47,10 @@ function PasswordReset({onNavigate }: LoginPageProps) {
 
             if(res.data == 200) {
               toastr["success"]("Password was successfully changed. You will be redirected to the student view within five seconds.", "Success")
+              setTimeout(()=>{window.location.href = '/'}, 5000)
             }
             else {
-              toastr["error"]("The backend may have run out of memory on Renders free plan. Wait a few minutes before attempting to reset password.", "Server Issue")
+              toastr["error"]("The backend may have run out of memory on Renders free plan. Wait a few minutes before re-attempting to reset password.", "Server Issue")
             }
 
         })
@@ -57,8 +58,6 @@ function PasswordReset({onNavigate }: LoginPageProps) {
           console.log(err)
           toastr["error"]("The backend may have run out of memory on Renders free plan. Wait a few minutes before attempting to reset password.", "Server Issue")
         });
-
-        setTimeout(()=>{window.location.href = '/'}, 5000)
     };
   
 
