@@ -153,6 +153,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       })
       .catch(err => {
           console.log(err)
+          err()
           toastr["error"]("There was an error loading modules for deletion. The backend may have run out of memory on Renders free plan. Try again later.", "Retriving Data")
           setLoading(false)
         });
@@ -180,6 +181,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         })
         .catch(err => {
             console.log(err)
+            err()
             toastr["error"]("There was an error deleting the module. The backend may have run out of memory on Renders free plan. Try again later.", "Deleting Module")
             setLoading(false)
           });
@@ -212,6 +214,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             success('desc')
           }
           else {
+            err()
             toastr["error"]("There was an error updating the description. The backend may have run out of memory on Renders free plan. Try again later.", "Updating Description")
           }
           
@@ -219,6 +222,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
       })
       .catch(err => {
           console.log(err)
+          err()
           toastr["error"]("There was an error updating the description. The backend may have run out of memory on Renders free plan. Try again later.", "Updating Description")
           setLoading(false)});
   };
@@ -301,6 +305,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
 
       // if the file did not send for some reason server sends err msg "empty"
       if(result.data.includes('empty')) {
+        err()
         toastr["error"]("The server did not receive the file(s). Ensure naming conventions are followed and try again.", "Error")
       }
 
@@ -310,6 +315,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
     })
     .catch(err => {console.log(err);
        setLoading(false)
+       err()
        toastr["error"]("Error uploading file(s). This may be because of incorrectly named file(s) or the backend may have run out of memory on Renders free plan. Please check file names. If issue persists after fixing file names, then this is a Render memory issue and simply try uploading again later.", "Error")
       });
   }
@@ -482,27 +488,13 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
             <p className='text-sm text-[#2D2926] sm-margin'>Some examples below fit the naming criteria</p>
             <ul className='naming'>
               <li className='text-sm'>Patterns of Course QM Module 1</li>
-              <li className='text-sm'>Module 1</li>  
-            </ul>
-            <ul className='naming'>
-              <li className='text-sm'>Patterns of Course QM Module 2</li>
-              <li className='text-sm'>Module 2</li>
-            </ul>
-            <ul className='naming'>
               <li className='text-sm'>Patterns of Course QM Module 3</li>
-              <li className='text-sm'>Module 3</li>
+              <li className='text-sm'>Patterns of Course QM Module 5</li>
               </ul>
             <ul className='naming'>
+              <li className='text-sm'>Patterns of Course QM Module 2</li>
               <li className='text-sm'>Patterns of Course QM Module 4</li>
-              <li className='text-sm'>Module 4</li>
-            </ul>
-            <ul className='naming'>
-              <li className='text-sm'>Patterns of Course QM Module 5</li>
-              <li className='text-sm'>Module 5</li>
-            </ul>
-            <ul className='naming'>
               <li className='text-sm'>Patterns of Course QM Module 6</li>
-              <li className='text-sm'>Module 6</li>
             </ul>
           </div>
           
@@ -570,7 +562,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         </Card>
 
         {/* Delete Module Section */}
-        <Card className="p-6 mb-6">
+        <Card className="p-6 mb-6 ">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Delete Module Content</h3>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
@@ -601,7 +593,7 @@ export function AdminView({ onNavigate, onLogout, aboutText, abtTextID, onUpdate
         </Card>
 
         {/* Update About - CS 633 Section */}
-        <Card className="p-6 mb-6 border-2 border-[#2D2926]">
+        <Card className="p-6 mb-6 border-2 border-[#E6E6E7]">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-xl font-semibold text-gray-900">Update About - CS 633</h3>
             <Badge variant="outline" className="text-xs">Database Content</Badge>
