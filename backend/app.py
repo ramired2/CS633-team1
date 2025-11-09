@@ -619,10 +619,15 @@ def addMod(files, ext):
 # 
 #-------------------------------------------------------------------------------
 @app.route("/seeImgs/<option>", methods=['POST', 'GET', 'PUT'])
-def seeImgs(option, data):
+def seeImgs(option):
     db = connect()                          # opens DB connection
     modules = db["modules"]                 # specifically get modules table
     pics = {}                               # dict of module slides
+
+    data = []                         # make list for the data
+
+    for x in modules.find({}, {"pics":0}).sort("modName"):   # get id and modName only, "pics" key
+        data.append(x)                                       # and sort by module name
 
     link = "https://pgcqm-backend.onrender.com/static"   # host link
     # link = 'http://localhost:5000/'
