@@ -156,7 +156,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
    * 
    * ***************************************************************************/
   const getMods = async() => {
-    const res = await axios (`${backend}/getMods`, {
+    const res = await axios (`${backend}/seeImgs/all`, {
         headers: { 'Content-Type': 'application/json'},
         method: "GET",
         })
