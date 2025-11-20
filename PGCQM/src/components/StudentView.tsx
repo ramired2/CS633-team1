@@ -215,7 +215,7 @@ export function StudentView({ onNavigate, aboutText }: StudentViewProps) {
               {modIds.map((num) => (
                 <Button
                   key={num['_id']}
-                  onClick={() => {setSelectedModule(num['modName'].substr(-1)); setSelectedContent('key-concepts');console.log(selectedModule)}}
+                  onClick={() => {setSelectedModule(num['modName'].substr(-1)); console.log(selectedModule)}}
                   className={`w-full ${sidebarCollapsed ? 'p-2 justify-center' : 'p-3'} h-auto flex items-center gap-2 transition-all ${
                     selectedModule === num['modName'].substr(-1)
                       ? 'bg-[#CC0000] text-white shadow-lg hover:bg-[#CC0000]'
